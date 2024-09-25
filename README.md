@@ -26,7 +26,6 @@ npm init -y
 ```bash
 npm install express
 npm install -D typescript @types/express @types/node
-npm install -D nodemon
 ```
 
 4. Initialize TypeScript configuration:
