@@ -1,6 +1,26 @@
 # Snippet Box API
 ====================
 
+
+
+Here is the table of contents for the README.md file in this project:
+
+## Table of Contents
+
+- [Project Overview](#project-overview)
+- [Project Construction](#project-construction)
+- [Running the Project](#running-the-project)
+  - [Build the Project](#build-the-project)
+  - [Start the Project](#start-the-project)
+  - [Development with Auto-Reloading](#development-with-auto-reloading)
+- [Project Structure](#project-structure)
+- [Dependencies](#dependencies)
+- [Server Setup](#server-setup)
+  - [Server Configuration](#server-configuration)
+  - [Server Execution](#server-execution)
+
+Let me know if you'd like me to make any changes!
+
 ## Project Overview
 
 This project is a simple API built using Node.js and Express.js. It provides a basic endpoint for storing and retrieving messages with an expiration.
