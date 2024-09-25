@@ -100,6 +100,13 @@ This will start the server and watch for changes in the `src` directory. When ch
 * `dist`: This directory contains the compiled JavaScript code.
 * `package.json`: This file contains metadata for the project, including dependencies and scripts.
 * `tsconfig.json`: This file contains configuration options for the TypeScript compiler.
+, in this project, server.js is automatically generated from server.ts.
+
+The server.ts file is written in TypeScript, and it is compiled to JavaScript and saved as server.js. The compilation is done using the TypeScript compiler (tsc) when the project is built.
+
+The build script in the package.json file specifies that the TypeScript compiler should be run before the project is started. This is done using the command tsc && set NODE_ENV=development&& node ./dist/server.js.
+
+The server.js file is then executed using the node command, which starts the server and listens on port 3000.
 
 ## Dependencies
 
