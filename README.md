@@ -61,7 +61,7 @@ app.listen(3000, () => {
 
 7. Update the `package.json` file to include build and start scripts:
 
-   ```json   
+```json   
   "scripts": {
     "build": "tsc",
     "start": "node dist/index.js",
