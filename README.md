@@ -34,6 +34,8 @@ npm install -D typescript @types/express @types/node
    ```bash
 npx tsc --init
 ```
+This will generate a `tsconfig.json` file in the project directory.
+This code should be replace with the package at the following link: https://www.totaltypescript.com/tsconfig-cheat-sheet
 
 5. Create a `src` directory and an `server.ts` file inside it:
    ```bash
