@@ -11,47 +11,42 @@ This project was constructed by following these steps:
 
 1. Create a new project directory and navigate to it:
 
-   ```bash
-
+```bash
 mkdir express-snippet-box
 cd express-snippet-box
-
 ```
 2. Initialize a new Node.js project:
-   ```bash
+
+```bash
 npm init -y
 ```
 
 3. Install the necessary dependencies:
 
-   ```bash
+```bash
 npm install express
 npm install -D typescript @types/express @types/node
 npm install -D nodemon
-
 ```
 
 4. Initialize TypeScript configuration:
 
-   ```bash
-
+```bash
 npx tsc --init
-
 ```
 This will generate a `tsconfig.json` file in the project directory.
 This code should be replaced with the package at the following link: https://www.totaltypescript.com/tsconfig-cheat-sheet
 
 5. Create a `src` directory and an `server.ts` file inside it:
 
-   ```bash
-
+```bash
 mkdir src
 touch src/server.ts
-
 ```
 
 6. Open `src/server.ts` and add the following code:
-   ```typescript
+
+```typescript
 import express from "express";
 
 const app = express();
@@ -68,7 +63,6 @@ app.listen(3000, () => {
 7. Update the `package.json` file to include build and start scripts:
 
    ```json
-
 {
   "scripts": {
     "build": "tsc",
@@ -76,15 +70,12 @@ app.listen(3000, () => {
     "dev": "tsc -w & nodemon dist/index.js"
   }
 }
-
 ```
 
 8. Install nodemon for development:
 
-   ```bash
-
+```bash
 npm install -D nodemon
-
 ```
 
 ## Running the Project
@@ -93,26 +84,20 @@ To run the project, follow these steps:
 
 1. Build the project:
 
-   ```bash
-
+```bash
 npm run build
-
 ```
 
 2. Start the project:
 
-   ```bash
-
+```bash
 npm start
-
 ```
 
 For development with auto-reloading, use the following command:
 
 ```bash
-
 npm run dev
-
 ```
 
 This will start the server and watch for changes in the `src` directory. When changes are detected, the server will automatically restart.
