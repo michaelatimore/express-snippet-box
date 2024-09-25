@@ -1,38 +1,63 @@
 #Snippet Box API
 
+
+
+# Snippet Box API
+====================
+
+## Project Overview
+
+This project is a simple API built using Node.js and Express.js. It provides a basic endpoint for storing and retrieving messages with an expiration.
+
+## Project Construction
+
+This project was constructed by following these steps:
+
 1. Create a new project directory and navigate to it:
+   ```bash
 mkdir express-snippet-box
 cd express-snippet-box
+```
 
 2. Initialize a new Node.js project:
+   ```bash
 npm init -y
+```
 
 3. Install the necessary dependencies:
+   ```bash
 npm install express
 npm install -D typescript @types/express @types/node
+```
 
-4.Initialize TypeScript configuration:
+4. Initialize TypeScript configuration:
+   ```bash
 npx tsc --init
+```
 
-5.Create a `src` directory and an `server.ts` file inside it:
+5. Create a `src` directory and an `server.ts` file inside it:
+   ```bash
 mkdir src
 touch src/server.ts
+```
 
-6.Open `src/server.ts` and add the following code:
-import express;
+6. Open `src/server.ts` and add the following code:
+   ```typescript
+import express from "express";
 
-const app: Express = express();
-const port = 3000;
+const app = express();
 
 app.get("/", (req, res) => {
-    res.json({serverMessage:"Hello World!"});
+  res.json({ serverMessage: "Hello World!" });
 });
 
-app.listen(port, () => {
-  console.log(`Server is running at http://localhost:${port}`);
+app.listen(3000, () => {
+  console.log("Server started on http://localhost:3000");
 });
+```
 
-7.Update the `package.json` file to include build and start scripts:
+7. Update the `package.json` file to include build and start scripts:
+   ```json
 {
   "scripts": {
     "build": "tsc",
@@ -40,13 +65,46 @@ app.listen(port, () => {
     "dev": "tsc -w & nodemon dist/index.js"
   }
 }
+```
 
-8.Install nodemon for development:
+8. Install nodemon for development:
+   ```bash
 npm install -D nodemon
+```
 
-9.Build and run the application:
+## Running the Project
+
+To run the project, follow these steps:
+
+1. Build the project:
+   ```bash
 npm run build
-npm start
+```
 
-For development with auto-reloading:
+2. Start the project:
+   ```bash
+npm start
+```
+
+For development with auto-reloading, use the following command:
+```bash
 npm run dev
+```
+
+This will start the server and watch for changes in the `src` directory. When changes are detected, the server will automatically restart.
+
+## Project Structure
+
+* `src`: This directory contains the source code for the project.
+* `src/server.ts`: This file contains the main application code.
+* `dist`: This directory contains the compiled JavaScript code.
+* `package.json`: This file contains metadata for the project, including dependencies and scripts.
+* `tsconfig.json`: This file contains configuration options for the TypeScript compiler.
+
+## Dependencies
+
+* `express`: A popular Node.js web framework.
+* `typescript`: A superset of JavaScript that adds optional static typing and other features.
+* `@types/express`: Type definitions for Express.js.
+* `@types/node`: Type definitions for Node.js.
+* `nodemon`: A tool for automatically restarting the server when changes are detected.
