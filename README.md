@@ -74,12 +74,16 @@ import express from "express";
 
 const app = express();
 
+const PORT = process.env.PORT ?? 3000;
+
 app.get("/", (req, res) => {
-  res.json({ serverMessage: "Hello World!" });
+  res.json({ serverMessage: "Hello world!" });
 });
 
-app.listen(3000, () => {
-  console.log("Server started on http://localhost:3000");
+app.listen(PORT, () => {
+  if (process.env.NODE_ENV === "development") {
+    console.log(`server running at http://localhost:${PORT}`);
+  }
 });
 ```
 * server.ts serves as the main entry point for the application.
@@ -87,11 +91,12 @@ app.listen(3000, () => {
 7. Update the `package.json` file to include build and start scripts:
 
 ```json   
-  "scripts": {
-    "build": "tsc",
-    "start": "node dist/index.js",
-    "dev": "tsc -w & nodemon dist/index.js"
-  }
+{
+  "watch": ["src"],
+  "ext": ".ts,.js",
+  "ignore": [],
+  "exec": "tsc && set NODE_ENV=development&& node ./dist/server.js"
+}
 ```
 
 8. Install nodemon for development:
