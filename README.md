@@ -112,8 +112,8 @@ touch .gitignore
 ```
 
 10. Add the following to the .gitignore file:
-node_modules
-dist
+`node_modules`
+`dist`
 
 
 ## Running the Project
