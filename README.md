@@ -101,6 +101,14 @@ app.listen(PORT, () => {
 }
 ```
 
+This code will do the following:
+* `watch: ["src"]`: This tells the script to monitor the "src" directory for any changes. When files in this directory are modified, the script will trigger a recompilation.
+* `ext: ".ts,.js`: This specifies which file extensions the script should watch for changes. In this case, it's watching both TypeScript (.ts) and JavaScript (.js) files.
+* `"ignore": []`: This array can be used to specify files or directories that should be ignored by the watch process. It's currently empty, meaning no files are being ignored.
+* `"exec": "tsc && set NODE_ENV=development&& node ./dist/server.js"`: This is the command that gets executed when changes are detected. It does the following:
+* `tsc`: Compiles the TypeScript files using the TypeScript compiler.
+* `set NODE_ENV=development`: Sets the NODE_ENV environment variable to "development".
+* `node ./dist/server.js`: Runs the compiled JavaScript file located in the "dist" directory.
 8. Install nodemon for development:
 
 ```bash
