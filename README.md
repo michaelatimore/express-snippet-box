@@ -64,7 +64,8 @@ npx tsc --init
 
 ```bash
 mkdir src
-touch src/server.ts```
+touch src/server.ts
+```
 
 6. Open `src/server.ts` and add the following code:
 
