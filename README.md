@@ -41,6 +41,8 @@ cd express-snippet-box
 npm init -y
 ```
 
+* This will generate a `package.json` file in the project directory.
+
 3. Install the necessary dependencies:
 
 ```bash
