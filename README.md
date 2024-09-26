@@ -21,9 +21,15 @@
 
 
 
-## Project Overview
-
-This project is a simple API built using Node.js and Express.js. It provides a basic endpoint for storing and retrieving messages with an expiration.
+This project is a learning exercise aimed at developing a simple API using Node.js and Express.js, with TypeScript as the programming language. The API will provide basic endpoints for storing and retrieving messages with an expiration feature. The primary goal of this project is to gain hands-on experience in building APIs, understanding the Express framework, and leveraging Node.js as the underlying runtime environment.
+Under the guidance of a mentor, this project serves as a practical introduction to:
+Setting up an Express.js application with TypeScript
+Implementing RESTful API endpoints
+Handling data storage and retrieval
+Managing message expiration logic
+Understanding the relationship between Node.js and Express
+Best practices in API development
+Through this guided learning process, the project will evolve to demonstrate fundamental concepts in backend development, API design, and the use of TypeScript in a Node.js environment
 
 ## Project Construction
 
