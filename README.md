@@ -1,6 +1,27 @@
 # Snippet Box API
 ====================
 
+
+
+
+## Table of Contents
+
+- [Project Overview](#project-overview)
+- [Project Construction](#project-construction)
+  - [Server Configuration](#server-configuration)
+- [Running the Project](#running-the-project)
+  - [Build the Project](#build-the-project)  
+  - [Start the Project](#start-the-project)
+  - [Server Execution](#server-execution)
+  - [Development with Auto-Reloading](#development-with-auto-reloading)
+- [Project Structure](#project-structure)
+- [Dependencies](#dependencies)
+
+  
+  
+
+
+
 ## Project Overview
 
 This project is a simple API built using Node.js and Express.js. It provides a basic endpoint for storing and retrieving messages with an expiration.
@@ -27,6 +48,8 @@ npm init -y
 npm install express
 npm install -D typescript @types/express @types/node
 ```
+* `npm install express`: Installs the Express.js framework as a dependency.
+* `npm install -D typescript @types/express @types/node`: Installs TypeScript and type definitions for Express and Node.js as development dependencies.
 
 4. Initialize TypeScript configuration:
 
@@ -42,6 +65,7 @@ This code should be replaced with the package at the following link: https://www
 mkdir src
 touch src/server.ts
 ```
+### Server Configuration
 
 6. Open `src/server.ts` and add the following code:
 
@@ -79,17 +103,19 @@ npm install -D nodemon
 
 To run the project, follow these steps:
 
-1. Build the project:
+### Build the project:
 
 ```bash
 npm run build
 ```
 
-2. Start the project:
+### Start the project:
 
 ```bash
 npm start
 ```
+
+### Development with Auto-Reloading:
 
 For development with auto-reloading, use the following command:
 
