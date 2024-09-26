@@ -105,15 +105,17 @@ app.listen(PORT, () => {
 npm install -D nodemon
 ```
 
-9. Creat a .gitignore file
+9. Create a .gitignore file
 
 ```bash
 touch .gitignore
 ```
 
 10. Add the following to the .gitignore file:
-`node_modules`
-`dist`
+```bash
+node_modules
+dist
+```
 
 
 ## Running the Project
