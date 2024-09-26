@@ -93,6 +93,20 @@ app.listen(PORT, () => {
 7. Update the `package.json` file to include build and start scripts:
 
 ```json   
+  "scripts": {
+    "build": "tsc",
+    "dev": "nodemon"
+  },
+```
+8. Install nodemon for development:
+
+```bash
+npm install -D nodemon
+```
+* Create a `nodemon.json` file in the project directory.
+* Insert the following code into the `nodemon.json` file:
+
+```json
 {
   "watch": ["src"],
   "ext": ".ts,.js",
@@ -109,11 +123,6 @@ This code will do the following:
 * `tsc`: Compiles the TypeScript files using the TypeScript compiler.
 * `set NODE_ENV=development`: Sets the NODE_ENV environment variable to "development".
 * `node ./dist/server.js`: Runs the compiled JavaScript file located in the "dist" directory.
-8. Install nodemon for development:
-
-```bash
-npm install -D nodemon
-```
 
 9. Create a .gitignore file
 
