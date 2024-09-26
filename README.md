@@ -11,7 +11,6 @@
   - [Server Configuration](#server-configuration)
 - [Running the Project](#running-the-project)
   - [Build the Project](#build-the-project)  
-  - [Start the Project](#start-the-project)
   - [Server Execution](#server-execution)
   - [Development with Auto-Reloading](#development-with-auto-reloading)
 - [Project Structure](#project-structure)
@@ -110,15 +109,9 @@ To run the project, follow these steps:
 npm run build
 ```
 
-### Start the project:
-
-```bash
-npm start
-```
-
 ### Development with Auto-Reloading:
 
-For development with auto-reloading, use the following command:
+To start the project for development with auto-reloading, use the following command:
 
 ```bash
 npm run dev
