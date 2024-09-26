@@ -8,9 +8,9 @@
 
 - [Project Overview](#project-overview)
 - [Project Construction](#project-construction)
-- [Running the Project](#running-the-project)
-  - [Build the Project](#build-the-project)
   - [Server Configuration](#server-configuration)
+- [Running the Project](#running-the-project)
+  - [Build the Project](#build-the-project)  
   - [Start the Project](#start-the-project)
   - [Server Execution](#server-execution)
   - [Development with Auto-Reloading](#development-with-auto-reloading)
@@ -20,7 +20,7 @@
   
   
 
-Let me know if you'd like me to make any changes!
+
 
 ## Project Overview
 
@@ -63,6 +63,7 @@ This code should be replaced with the package at the following link: https://www
 mkdir src
 touch src/server.ts
 ```
+### Server Configuration
 
 6. Open `src/server.ts` and add the following code:
 
@@ -100,17 +101,19 @@ npm install -D nodemon
 
 To run the project, follow these steps:
 
-1. Build the project:
+### Build the project:
 
 ```bash
 npm run build
 ```
 
-2. Start the project:
+### Start the project:
 
 ```bash
 npm start
 ```
+
+### Development with Auto-Reloading:
 
 For development with auto-reloading, use the following command:
 
