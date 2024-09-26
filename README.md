@@ -1,8 +1,15 @@
 # Snippet Box API
 ====================
 
-
-
+This project is a learning exercise aimed at developing a simple API using Node.js and Express.js, with TypeScript as the programming language. The API will provide basic endpoints for storing and retrieving messages with an expiration feature. The primary goal of this project is to gain hands-on experience in building APIs, understanding the Express framework, and leveraging Node.js as the underlying runtime environment.
+Under the guidance of a mentor, this project serves as a practical introduction to:
+1. Setting up an Express.js application with TypeScript
+2. Implementing RESTful API endpoints
+3. Handling data storage and retrieval
+4. Managing message expiration logic
+5. Understanding the relationship between Node.js and Express
+6. Best practices in API development
+Through this guided learning process, the project will evolve to demonstrate fundamental concepts in backend development, API design, and the use of TypeScript in a Node.js environment.
 
 ## Table of Contents
 
@@ -11,20 +18,12 @@
   - [Server Configuration](#server-configuration)
 - [Running the Project](#running-the-project)
   - [Build the Project](#build-the-project)  
-  - [Start the Project](#start-the-project)
   - [Server Execution](#server-execution)
   - [Development with Auto-Reloading](#development-with-auto-reloading)
 - [Project Structure](#project-structure)
 - [Dependencies](#dependencies)
 
-  
-  
 
-
-
-## Project Overview
-
-This project is a simple API built using Node.js and Express.js. It provides a basic endpoint for storing and retrieving messages with an expiration.
 
 ## Project Construction
 
@@ -65,7 +64,8 @@ npx tsc --init
 
 ```bash
 mkdir src
-touch src/server.ts```
+touch src/server.ts
+```
 
 6. Open `src/server.ts` and add the following code:
 
@@ -110,15 +110,9 @@ To run the project, follow these steps:
 npm run build
 ```
 
-### Start the project:
-
-```bash
-npm start
-```
-
 ### Development with Auto-Reloading:
 
-For development with auto-reloading, use the following command:
+To start the project for development with auto-reloading, use the following command:
 
 ```bash
 npm run dev
