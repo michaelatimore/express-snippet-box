@@ -56,16 +56,16 @@ npm install -D typescript @types/express @types/node
 ```bash
 npx tsc --init
 ```
-This will generate a `tsconfig.json` file in the project directory.
-This code should be replaced with the package at the following link: https://www.totaltypescript.com/tsconfig-cheat-sheet
+* This will generate a `tsconfig.json` file in the project directory.
+* This code should be replaced with the package at the following link: https://www.totaltypescript.com/tsconfig-cheat-sheet
+
+### Server Configuration
 
 5. Create a `src` directory and an `server.ts` file inside it:
 
 ```bash
 mkdir src
-touch src/server.ts
-```
-### Server Configuration
+touch src/server.ts```
 
 6. Open `src/server.ts` and add the following code:
 
@@ -82,6 +82,7 @@ app.listen(3000, () => {
   console.log("Server started on http://localhost:3000");
 });
 ```
+* server.ts serves as the main entry point for the application.
 
 7. Update the `package.json` file to include build and start scripts:
 
