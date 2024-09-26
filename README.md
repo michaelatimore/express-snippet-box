@@ -48,6 +48,8 @@ npm init -y
 npm install express
 npm install -D typescript @types/express @types/node
 ```
+* `npm install express`: Installs the Express.js framework as a dependency.
+* `npm install -D typescript @types/express @types/node`: Installs TypeScript and type definitions for Express and Node.js as development dependencies.
 
 4. Initialize TypeScript configuration:
 
