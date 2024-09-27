@@ -1,6 +1,23 @@
 # Snippet Box API
 ==========================================================================
 
+
+
+## Table of Contents
+- [Project Overview](#project-overview)
+- [Quick Start](#quick-start)
+- [Project Construction](#project-construction)
+  - [Server Configuration](#server-configuration)
+- [Running the Project](#running-the-project)
+  - [Build the Project](#build-the-project)  
+  - [Development with Auto-Reloading](#development-with-auto-reloading)
+- [Project Structure](#project-structure)
+- [Dependencies](#dependencies)
+
+
+
+## Project Overview
+
 This project is a learning exercise aimed at developing a simple API using Node.js and Express.js, with TypeScript as the programming language. The API will provide basic endpoints for storing and retrieving messages with an expiration feature. The primary goal of this project is to gain hands-on experience in building APIs, understanding the Express framework, and leveraging Node.js as the underlying runtime environment.
 Under the guidance of a mentor, this project serves as a practical introduction to:
 1. Setting up an Express.js application with TypeScript
@@ -11,16 +28,47 @@ Under the guidance of a mentor, this project serves as a practical introduction 
 6. Best practices in API development
 Through this guided learning process, the project will evolve to demonstrate fundamental concepts in backend development, API design, and the use of TypeScript in a Node.js environment.
 
-## Table of Contents
+## Quick Start Guide
+Follow these steps to get the project up and running on your local machine:
 
-- [Project Overview](#project-overview)
-- [Project Construction](#project-construction)
-  - [Server Configuration](#server-configuration)
-- [Running the Project](#running-the-project)
-  - [Build the Project](#build-the-project)  
-  - [Development with Auto-Reloading](#development-with-auto-reloading)
-- [Project Structure](#project-structure)
-- [Dependencies](#dependencies)
+1. Ensure Node.js is installed
+* Check your Node.js version:
+```bash
+node --version
+```
+If Node.js is not installed, download and install it from nodejs.org.
+
+2. Clone the repository
+* Using HTTPS:
+``` bash
+git clone https://github.com/michaelatimore/express-snippet-box.git
+```
+
+* Or using SSH:
+``` bash
+git clone git@github.com:michaelatimore/express-snippet-box.git
+```
+
+3 Navigate to the project directory
+``` bash
+cd express-snippet-box
+```
+
+4. Install dependencies
+```bash
+npm install
+```
+
+* This will install all necessary dependencies, including Express.
+Build the project
+bash
+npm run build
+
+5. Start the development server
+``` bash
+npm run dev
+```
+* The server should now be running at http://localhost:3000. You can access it through your web browser or use tools like Postman to interact with the API.
 
 
 
