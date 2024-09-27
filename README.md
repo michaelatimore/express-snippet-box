@@ -18,7 +18,6 @@ Through this guided learning process, the project will evolve to demonstrate fun
   - [Server Configuration](#server-configuration)
 - [Running the Project](#running-the-project)
   - [Build the Project](#build-the-project)  
-  - [Server Execution](#server-execution)
   - [Development with Auto-Reloading](#development-with-auto-reloading)
 - [Project Structure](#project-structure)
 - [Dependencies](#dependencies)
@@ -142,6 +141,7 @@ dist
 To run the project, follow these steps:
 
 ### Build the project:
+
 
 ```bash
 npm run build
