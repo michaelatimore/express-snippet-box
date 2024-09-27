@@ -90,17 +90,17 @@ npm init
 ```
 This will start the interactive questionnaire. You'll be prompted to answer several questions about your project:
 
-```bash
-package name: (default is your directory name)
-version: (default is 1.0.0)
-description: A brief description of your project
-entry point: (default is index.js)
-test command
-git repository: URL of your git repo (if applicable)
-keywords: Keywords related to your project
-author: Your name
-license: (default is ISC)
-```
+
+`package name`: (default is your directory name)
+`version`: (default is 1.0.0)
+`description`: A brief description of your project
+`entry point`: (default is index.js)
+`test command`
+`git repository`: URL of your git repo (if applicable)
+`keywords`: Keywords related to your project
+`author`: Your name
+`license`: (default is ISC)
+
 
  For each question, you can either:
 * Enter your desired value
