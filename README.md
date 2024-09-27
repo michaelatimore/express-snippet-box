@@ -83,28 +83,28 @@ mkdir express-snippet-box
 cd express-snippet-box
 ```
 
-2. Initialize a new Node.js project:
+2. Initialize a new node.js project:
 
 ```bash
 npm init
 ```
-* This will start the interactive questionnaire. You'll be prompted to answer several questions about your project:
-1. package name: (default is your directory name)
-2. version: (default is 1.0.0)
-3. description: A brief description of your project
-4. entry point: (default is index.js)
-5. test command
-6. git repository: URL of your git repo (if applicable)
-7. keywords: Keywords related to your project
-8. author: Your name
-9. license: (default is ISC)
+This will start the interactive questionnaire. You'll be prompted to answer several questions about your project:
+* package name: (default is your directory name)
+* version: (default is 1.0.0)
+* description: A brief description of your project
+* entry point: (default is index.js)
+* test command
+* git repository: URL of your git repo (if applicable)
+* keywords: Keywords related to your project
+* author: Your name
+* license: (default is ISC)
 
-* For each question, you can either:
-1. Enter your desired value
-2. Press Enter to accept the default value (shown in parentheses)
-3. Press Enter with no input to leave the field blank
+ For each question, you can either:
+* Enter your desired value
+* Press Enter to accept the default value (shown in parentheses)
+* Press Enter with no input to leave the field blank
 
-* After answering all questions, npm will show you the resulting package.json contents and ask if it's okay. Type 'yes' and press Enter to confirm.
+After answering all questions, npm will show you the resulting package.json contents and ask if it's okay. Type 'yes' and press Enter to confirm.
 * The `package.json` file that is generated will be populated based on the answers provided.
 * Scripts and dependencies relevant to your project will be added automatically.
 
