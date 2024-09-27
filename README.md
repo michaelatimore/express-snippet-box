@@ -14,7 +14,7 @@
 
 ## Project Overview
 
-This project is a learning exercise aimed at developing a simple API using Node.js and Express.js, with TypeScript as the programming language. The API will provide basic endpoints for storing and retrieving messages with an expiration feature. The primary goal of this project is to gain hands-on experience in building APIs, understanding the Express framework, and leveraging Node.js as the underlying runtime environment.
+This project is a learning exercise aimed at developing a simple API using Node.js and Express.js, with TypeScript as the programming language. 
 
 
 ## Quick Start
@@ -56,7 +56,7 @@ npm run build
 ``` bash
 npm run dev
 ```
-* The server should now be running at http://localhost:3000. You can access it through your web browser or use tools like Postman to interact with the API.
+* The server should now be running at http://localhost:3000.
 
 
 ## Project Construction
@@ -144,7 +144,6 @@ app.listen(PORT, () => {
   }
 });
 ```
-* server.ts serves as the main entry point for the application.
 
 7. Update the `package.json` file to include build and start scripts:
 
