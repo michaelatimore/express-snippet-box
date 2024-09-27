@@ -27,6 +27,7 @@ Under the guidance of a mentor, this project serves as a practical introduction 
 6. Best practices in API development
 Through this guided learning process, the project will evolve to demonstrate fundamental concepts in backend development, API design, and the use of TypeScript in a Node.js environment.
 
+
 ## Quick Start
 Follow these steps to get the project up and running on your local machine:
 
@@ -81,13 +82,31 @@ This project was constructed by following these steps:
 mkdir express-snippet-box
 cd express-snippet-box
 ```
+
 2. Initialize a new Node.js project:
 
 ```bash
-npm init -y
+npm init
 ```
+* This will start the interactive questionnaire. You'll be prompted to answer several questions about your project:
+1. package name: (default is your directory name)
+2. version: (default is 1.0.0)
+3. description: A brief description of your project
+4. entry point: (default is index.js)
+5. test command
+6. git repository: URL of your git repo (if applicable)
+7. keywords: Keywords related to your project
+8. author: Your name
+9. license: (default is ISC)
 
-* This will generate a `package.json` file in the project directory.
+* For each question, you can either:
+1. Enter your desired value
+2. Press Enter to accept the default value (shown in parentheses)
+3. Press Enter with no input to leave the field blank
+
+* After answering all questions, npm will show you the resulting package.json contents and ask if it's okay. Type 'yes' and press Enter to confirm.
+* The `package.json` file that is generated will be populated based on the answers provided.
+* Scripts and dependencies relevant to your project will be added automatically.
 
 3. Install the necessary dependencies:
 
@@ -95,6 +114,7 @@ npm init -y
 npm install express
 npm install -D typescript @types/express @types/node
 ```
+
 * `npm install express`: Installs the Express.js framework as a dependency.
 * `npm install -D typescript @types/express @types/node`: Installs TypeScript and type definitions for Express and Node.js as development dependencies.
 
@@ -103,11 +123,14 @@ npm install -D typescript @types/express @types/node
 ```bash
 npx tsc --init
 ```
+
 * This will generate a `tsconfig.json` file in the project directory.
 * The code that will be generated in the `tsconfig.json` file should be replaced with the following code:
+
 ``` json
 {
   "compilerOptions": {
+    /* Base Options: */
     "esModuleInterop": true,
     "skipLibCheck": true,
     "target": "es2022",
@@ -116,16 +139,22 @@ npx tsc --init
     "moduleDetection": "force",
     "isolatedModules": true,
     "verbatimModuleSyntax": true,
+    /* Strictness */
     "strict": true,
     "noUncheckedIndexedAccess": true,
     "noImplicitOverride": true,
+    /* For transpiling with TypeScript: */
     "module": "NodeNext",
     "outDir": "dist",
     "sourceMap": true,
+    /* For code not running in the DOM: */
     "lib": ["es2022"]
   }
 }
 ```
+* The comments should be removed. There are there for informational purposes only. A more detailed explanation for each option can be found at https://www.totaltypescript.com/tsconfig-cheat-sheet
+
+
 ### Server Configuration
 
 5. Create a `src` directory and an `server.ts` file inside it:
