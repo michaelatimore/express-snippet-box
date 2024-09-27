@@ -28,7 +28,7 @@ Under the guidance of a mentor, this project serves as a practical introduction 
 6. Best practices in API development
 Through this guided learning process, the project will evolve to demonstrate fundamental concepts in backend development, API design, and the use of TypeScript in a Node.js environment.
 
-## Quick Start Guide
+## Quick Start
 Follow these steps to get the project up and running on your local machine:
 
 1. Ensure Node.js is installed
