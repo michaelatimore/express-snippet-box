@@ -104,8 +104,28 @@ npm install -D typescript @types/express @types/node
 npx tsc --init
 ```
 * This will generate a `tsconfig.json` file in the project directory.
-* The code that will be generated in the `tsconfig.json` file should be replaced with the base option of the package at the following link: https://www.totaltypescript.com/tsconfig-cheat-sheet
-
+* The code that will be generated in the `tsconfig.json` file should be replaced with the following code:
+``` json
+{
+  "compilerOptions": {
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "target": "es2022",
+    "allowJs": true,
+    "resolveJsonModule": true,
+    "moduleDetection": "force",
+    "isolatedModules": true,
+    "verbatimModuleSyntax": true,
+    "strict": true,
+    "noUncheckedIndexedAccess": true,
+    "noImplicitOverride": true,
+    "module": "NodeNext",
+    "outDir": "dist",
+    "sourceMap": true,
+    "lib": ["es2022"]
+  }
+}
+```
 ### Server Configuration
 
 5. Create a `src` directory and an `server.ts` file inside it:
