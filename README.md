@@ -1,8 +1,6 @@
 # Snippet Box API
 
 
-## Project Overview
-
 This project is a simple API using Node.js and Express.js, with TypeScript as the programming language. 
 
 
