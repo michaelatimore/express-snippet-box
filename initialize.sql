@@ -16,9 +16,8 @@ CREATE TABLE IF NOT EXISTS snippets (
 )
 
 /*
-1. Do I need an expiration date or will our code handle that at the creation of the snippet?
-2. Is text the correct data type for the snippet content?
-3. Should the content of the snippet be included in this table?
-4. Are CURRENT_TIMESTAMPZ and TIMESTAMPZ the correct data types for creation_date and expiration_date?
-5. snippet_id uuid DEFAULT gen_random_uuid() as a method to generate a unique ID for the snippet?
+1. Is text the correct data type for the snippet content?
+2. Should the content of the snippet be included in this table?
+3. Are TIMESTAMPZ DEFAULT CURRENT_TIMESTAMP NOT NULL and TIMESTAMPZ the correct data types for creation_date and expiration_date?
+4. snippet_id uuid DEFAULT gen_random_uuid() as a method to generate a unique ID for the snippet?
 */
