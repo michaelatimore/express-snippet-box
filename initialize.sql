@@ -18,5 +18,6 @@ CREATE TABLE IF NOT EXISTS snippets (
 /*
 1. Do I need an expiration date or will our code handle that at the creation of the snippet?
 2. Is text the correct data type for the snippet content?
-3. Are CURRENT_TIMESTAMPZ and TIMESTAMPZ the correct data types for creation_date and expiration_date?
+3. Should the content of the snippet be included in this table?
+4. Are CURRENT_TIMESTAMPZ and TIMESTAMPZ the correct data types for creation_date and expiration_date?
 */
