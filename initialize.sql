@@ -7,8 +7,8 @@ create table if not exists users (
 
 create table if not exists snippets (
     snippet_id serial primary key,
-    content text not null,
     title varchar(256),
+    content text not null,
     creation_date timestamptz default current_timestamp not null,
     expiration_date timestamptz,
     snippet_owner integer not null,
