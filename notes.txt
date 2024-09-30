@@ -1,0 +1,304 @@
+/**
+ * Connect to MongoDB
+ */
+mongoose.connect('mongodb://localhost/messages', { useNewUrlParser: true, useUnifiedTopology: true });
+
+/**
+ * Define the message schema
+ */
+const messageSchema = new mongoose.Schema({
+  /**
+   * The message text
+   */
+  text: String,
+  /**
+   * The expiration time in milliseconds
+   */
+  expiresAt: Date,
+});
+
+/**
+ * Define the message model
+ */
+interface Message extends Document {
+  /**
+   * The message text
+   */
+  text: string;
+  /**
+   * The expiration time in milliseconds
+   */
+  expiresAt: Date`;
+}
+
+/**
+ * Create the message model
+ */
+const MessageModel = mongoose.model<Message>('Message', messageSchema);
+
+/**
+ * Define the expiration time in seconds
+ */
+const EXPIRATION_TIME = 60; // 1 minute
+
+/**
+ * Create an Express app
+ */
+const app = express();
+app.use(express.json());
+
+/**
+ * GET /messages
+ * Retrieve all messages
+ */
+app.get('/messages', async (req: Request, res: Response) => {
+  try {
+    const messages = await MessageModel.find().exec();
+    // Filter out expired messages
+    const filteredMessages = messages.filter((message) => message.expiresAt > Date.now());
+    res.json(filteredMessages);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: 'Failed to retrieve messages' });
+  }
+});
+/**
+ * POST /messages
+ * Create a new message
+ */
+app.post('/messages', async (req: Request, res: Response) => {
+  try {
+    const { text } = req.body;
+    const expiresAt = new Date(Date.now() + EXPIRATION_TIME * 1000);
+    const message = new MessageModel({ text, expiresAt });
+    await message.save();
+    res.json(message);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: 'Failed to create message' });
+  }
+});
+
+/**
+ * GET /messages/:id
+ * Retrieve a single message by ID
+ */
+app.get('/messages/:id', async (req: Request, res: Response) => {
+  try {
+    const id = req.params.id;
+    const message = await MessageModel.findById(id).exec();
+    if (!message) {
+      res.status(404).json({ error: 'Message not found' });
+    } else if (message.expiresAt < Date.now()) {
+      res.status(410).json({ error: 'Message has expired' });
+    } else {
+      res.json(message);
+    }
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: 'Failed to retrieve message' });
+  }
+});
+
+/**
+ * PUT /messages/:id
+ * Update a single message by ID
+ */
+app.put('/messages/:id', async (req: Request, res: Response) => {
+  try {
+    const id = req.params.id;
+    const { text } = req.body;
+    const message = await MessageModel.findById(id).exec();
+    if (!message) {
+      res.status(404).json({ error: 'Message not found' });
+    } else if (message.expiresAt < Date.now()) {
+      res.status(410).json({ error: 'Message has expired' });
+    } else {
+      message.text = text;
+      await message.save();
+      res.json(message);
+    }
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: 'Failed to update message' });
+  }
+});
+
+/**
+ * DELETE /messages/:id
+ * Delete a single message by ID
+ */
+app.delete('/messages/:id', async (req: Request, res: Response) => {
+  try {
+    const id = req.params.id;
+    await MessageModel.findByIdAndRemove(id).exec();
+    res.json({ message: 'Message deleted' });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: 'Failed to delete message' });
+  }
+});
+
+/**
+ * Start the server
+ */
+const port = 3000;
+app.listen(port, () => {
+  console.log(`Server listening on port ${port}`);
+});
+
+
+/**
+Docker instillation - https://docs.docker.com/get-started/get-docker/
+1. Install Docker. Click on "Images". In the main search bar at the top of the page, search for 'postgres'. 2. Select it and click the "Pull" button. Once the image has finished downloading, click "Run".
+3. A pop-up window will appear that allows you to create a container with the default settings, or customize the container name, port of the host computer, host path and environment variables.
+4. For this stage of the project, name the container the same as the app for simplicity, "express-snippet-box".
+5. Under ports, enter 5432.
+6. It's not necessary to alter the Volumes parameters, but the Environment variables should be set. The variable to be set is POSTSQL_PASSWORD, and any value can be entered in the password field. Click "run" and the server instance will spin up.
+
+When you open Docker and select a PostgreSQL image, several steps occur behind the scenes:
+1. Image Download:
+If you haven't previously downloaded the PostgreSQL image, Docker will pull it from Docker Hub or your specified registry1.
+2. Container Creation:
+Docker creates a new container based on the PostgreSQL image1.
+3. Environment Setup:
+Docker sets up the necessary environment variables, such as POSTGRES_PASSWORD, which is required for PostgreSQL to function properly12.
+4. Port Mapping:
+Docker maps the container's internal PostgreSQL port (usually 5432) to a port on your host machine, allowing you to connect to the database from outside the container24.
+5. Volume Creation (optional):
+If specified, Docker creates a volume to persist your database data, ensuring it survives container restarts or removals24.
+6. Container Start:
+Docker starts the container, which in turn starts the PostgreSQL server process12.
+7. Database Initialization:
+On first run, PostgreSQL initializes a new database cluster1.
+8. Configuration:
+Any custom configurations specified (like max_connections) are applied to the PostgreSQL instance3.
+9. Ready State:
+Once initialization is complete, the PostgreSQL server is ready to accept connections
+
+Install psql for access to PostSQL in the command line (psql). 
+1. Download the installer certified by EDB for all supported PostgreSQL versions:
+https://www.postgresql.org/download/windows/
+This installer includes:
+a. PostgreSQL server
+b. pgAdmin 4, a graphical tool for managing and developing your databases
+c. Stack Builder, a package manager for downloading and installing additional PostgreSQL tools and drivers.   Stack Builder includes management, integration, migration, replication, geospatial, connectors and other tools.
+d. Command Line Tools
+The command line tools are the only option that needs to be installed.
+
+2. Adding PostgreSQL to the System Path:
+
+* Open the System Properties dialogue box. Click the Environment Variables box.
+* Click on "Environment Variables".
+* Under "System variables" or "User variables", find the "Path" variable and click "Edit".
+* Add the PostgreSQL bin directory to your system PATH:
+ C:\Program Files\PostgreSQL\<version>\bin
+ C:\Program Files\PostgreSQL\<version>\lib
+This will allow access to psql in Command Prompt.
+* Documentation on the usage of psql can be found at the following link: https://www.postgresql.org/docs/current/app-psql.html
+
+To set the PATH in the bash terminal to have access to psql: export PATH=$PATH:"/C/Program Files/PostgreSQL/17/bin" in the bash terminal. I was unable to access PostgreSQL from a bash terminal until I took this step.
+
+Homebrew
+PostgreSQL can also be installed on macOS using Homebrew. For example, to install PostgreSQL 17, you can use the following command:
+brew install postgresql@157
+
+
+4. Creaate a file called initialize.sql to begin coding the tables. The CRUD functions will live here.
+ a. create a users table.
+ b. create a snippets table.
+
+
+
+You can now enter SQL commands or psql meta-commands.
+Some useful psql meta-commands:
+\l: List all databases
+\c dbname: Connect to a specific database
+\dt: List tables in the current database
+\d tablename: Describe a specific table
+\q: Quit psql
+
+
+
+
+
+Installing Docker on Windows 10/11
+Ensure your system meets the requirements:
+Windows 10 64-bit: Pro, Enterprise, or Education (Build 16299 or later)
+Windows 11 64-bit: Pro, Enterprise, or Education
+Virtualization enabled in BIOS
+At least 4GB of RAM
+Download Docker Desktop from the official website: https://www.docker.com/products/docker-desktop
+Run the installer and follow the prompts:
+Enable Hyper-V and Windows Containers features if prompted
+Choose whether to use WSL 2 backend (recommended)
+After installation, restart your computer
+Launch Docker Desktop and accept the terms of service
+Installing PostgreSQL Client (psql)
+Option 1: Full PostgreSQL Installation
+Download the installer from https://www.postgresql.org/download/windows/
+Run the installer, selecting only "Command Line Tools" if you don't need the full server
+Add PostgreSQL bin directory to your system PATH:
+text
+C:\Program Files\PostgreSQL\<version>\bin
+C:\Program Files\PostgreSQL\<version>\lib
+
+For Bash terminal access, add to your ~/.bashrc:
+bash
+export PATH=$PATH:"/C/Program Files/PostgreSQL/<version>/bin"
+
+Option 2: Minimal psql Installation
+Download psql from https://www.postgresql.org/download/windows/
+Extract the files and add the bin directory to your system PATH
+Creating a PostgreSQL Docker Container
+Open Docker Desktop
+Click on "Images" in the left sidebar
+Search for "postgres" in the search bar
+Click "Pull" to download the latest PostgreSQL image
+Once downloaded, click "Run"
+In the configuration window:
+Set a container name (e.g., "my-postgres")
+Map host port 5432 to container port 5432
+Set environment variables:
+POSTGRES_PASSWORD: your_secure_password
+POSTGRES_DB: your_database_name (optional)
+Set volume mapping for data persistence (optional):
+Host path: C:\path\to\data
+Container path: /var/lib/postgresql/data
+Click "Run" to start the container
+Connecting to the PostgreSQL Container:
+
+1. Using psql from command line:
+
+psql -h localhost -p 5432 -U postgres:
+This command is used to connect to a PostgreSQL database using the psql command-line tool. Let's break it down:
+1. psql: The PostgreSQL interactive terminal
+2. -h localhost: Specifies the host to connect to
+In this case, it's connecting to the local machine (localhost)
+3. -p 5432: Specifies the port number
+5432 is the default port for PostgreSQL
+4. -U postgres: Specifies the username to connect with
+'postgres' is typically the default superuser account
+
+When you run this command:
+You'll be prompted to enter the password for the 'postgres' user.
+After successful authentication, you'll connect to the default 'postgres' database.
+You'll see a welcome message and the psql prompt, typically like this:
+text
+psql (X.X)
+Type "help" for help.
+
+postgres=#
+
+2. Using a GUI tool like pgAdmin:
+
+Host: localhost
+Port: 5432
+Username: postgres
+Password: your_secure_password
+
+
+Creaate a file called initialize.sql to begin coding the tables. The CRUD functions will live here.
+ a. create a users table.
+ b. create a snippets table.
+/ */
