@@ -4,6 +4,7 @@
 
 ## Table of Contents
 - [Project Overview](#project-overview)
+- [Requirements](#requirements)
 - [Quick Start](#quick-start)
 - [Project Construction](#project-construction)
   - [Server Configuration](#server-configuration)
@@ -27,7 +28,12 @@ Under the guidance of a mentor, this project serves as a practical introduction 
 6. Best practices in API development
 Through this guided learning process, the project will evolve to demonstrate fundamental concepts in backend development, API design, and the use of TypeScript in a Node.js environment.
 
-
+## Requirements
+1. nodejs - https://nodejs.org/en/download/package-manager
+2. PostgreSQL - https://www.postgresql.org/download
+3. Docker - https://docs.docker.com/get-docker
+ 
+ 
 ## Quick Start
 Follow these steps to get the project up and running on your local machine:
 

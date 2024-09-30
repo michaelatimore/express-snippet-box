@@ -34,12 +34,7 @@ cd express-snippet-box
 npm install
 ```
 
-5. Build the project
-```bash
-npm run build
-```
-
-6. Start the development server
+5. Start the development server
 ``` bash
 npm run dev
 ```
