@@ -146,3 +146,16 @@ const port = 3000;
 app.listen(port, () => {
   console.log(`Server listening on port ${port}`);
 });
+
+
+/**
+1. Install Docker, spin up a container. Click on "Images". In the main search bar at the top of the page, search for postgres. Select it and click the "Pull" button. Once the image has finished downloading, click "Run".
+A pop-up window will appear that allows you to run the container with the default settings, or customize the container name, port of the host computer, host path and environment variables.
+For this stage of the project, name the container the same as the app for simplicity, "express-snippet-box".
+Under ports, enter 5432.
+It's not necessary to alter the Volumes parameters, but the Environment variables should be set. The variable to be set is POSTSQL_PASSWORD, and any value can be entered in the password field. Click "run" and the server instance will spin up.
+2. Install psql for access to PostSQL in the command line.
+3. Creaate a file called initialize.sql to begin coding the tables. The CRUD functions will live here.
+ a. create a users table.
+ b. create a snippets table.
+/ */
