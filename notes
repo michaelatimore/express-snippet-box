@@ -1,0 +1,148 @@
+/**
+ * Connect to MongoDB
+ */
+mongoose.connect('mongodb://localhost/messages', { useNewUrlParser: true, useUnifiedTopology: true });
+
+/**
+ * Define the message schema
+ */
+const messageSchema = new mongoose.Schema({
+  /**
+   * The message text
+   */
+  text: String,
+  /**
+   * The expiration time in milliseconds
+   */
+  expiresAt: Date,
+});
+
+/**
+ * Define the message model
+ */
+interface Message extends Document {
+  /**
+   * The message text
+   */
+  text: string;
+  /**
+   * The expiration time in milliseconds
+   */
+  expiresAt: Date`;
+}
+
+/**
+ * Create the message model
+ */
+const MessageModel = mongoose.model<Message>('Message', messageSchema);
+
+/**
+ * Define the expiration time in seconds
+ */
+const EXPIRATION_TIME = 60; // 1 minute
+
+/**
+ * Create an Express app
+ */
+const app = express();
+app.use(express.json());
+
+/**
+ * GET /messages
+ * Retrieve all messages
+ */
+app.get('/messages', async (req: Request, res: Response) => {
+  try {
+    const messages = await MessageModel.find().exec();
+    // Filter out expired messages
+    const filteredMessages = messages.filter((message) => message.expiresAt > Date.now());
+    res.json(filteredMessages);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: 'Failed to retrieve messages' });
+  }
+});
+/**
+ * POST /messages
+ * Create a new message
+ */
+app.post('/messages', async (req: Request, res: Response) => {
+  try {
+    const { text } = req.body;
+    const expiresAt = new Date(Date.now() + EXPIRATION_TIME * 1000);
+    const message = new MessageModel({ text, expiresAt });
+    await message.save();
+    res.json(message);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: 'Failed to create message' });
+  }
+});
+
+/**
+ * GET /messages/:id
+ * Retrieve a single message by ID
+ */
+app.get('/messages/:id', async (req: Request, res: Response) => {
+  try {
+    const id = req.params.id;
+    const message = await MessageModel.findById(id).exec();
+    if (!message) {
+      res.status(404).json({ error: 'Message not found' });
+    } else if (message.expiresAt < Date.now()) {
+      res.status(410).json({ error: 'Message has expired' });
+    } else {
+      res.json(message);
+    }
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: 'Failed to retrieve message' });
+  }
+});
+
+/**
+ * PUT /messages/:id
+ * Update a single message by ID
+ */
+app.put('/messages/:id', async (req: Request, res: Response) => {
+  try {
+    const id = req.params.id;
+    const { text } = req.body;
+    const message = await MessageModel.findById(id).exec();
+    if (!message) {
+      res.status(404).json({ error: 'Message not found' });
+    } else if (message.expiresAt < Date.now()) {
+      res.status(410).json({ error: 'Message has expired' });
+    } else {
+      message.text = text;
+      await message.save();
+      res.json(message);
+    }
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: 'Failed to update message' });
+  }
+});
+
+/**
+ * DELETE /messages/:id
+ * Delete a single message by ID
+ */
+app.delete('/messages/:id', async (req: Request, res: Response) => {
+  try {
+    const id = req.params.id;
+    await MessageModel.findByIdAndRemove(id).exec();
+    res.json({ message: 'Message deleted' });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: 'Failed to delete message' });
+  }
+});
+
+/**
+ * Start the server
+ */
+const port = 3000;
+app.listen(port, () => {
+  console.log(`Server listening on port ${port}`);
+});
