@@ -1,19 +1,20 @@
-CREATE TABLE IF NOT EXISTS users (
-    id SERIAL PRIMARY KEY,
-    email text UNIQUE NOT NULL ,
-    first_name varchar(25) NOT NULL,
+create table if not exists users (
+    id serial primary key,
+    email text unique not null,
+    first_name varchar(25) not null,
     last_name varchar(25)
-)
+);
 
-CREATE TABLE IF NOT EXISTS snippets (
-    snippet_id SERIAL PRIMARY KEY,
-    content text NOT NULL,
+create table if not exists snippets (
+    snippet_id serial primary key,
+    content text not null,
     title varchar(256),
-    creation_date TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP NOT NULL, /* RETURNS THE CURRENT DATE AND TIME AND SETS THAT VALUE ON A NEW ROW*/
-    expiration_date TIMESTAMPTZ,
-    snippet_owner INTEGER NOT NULL,
-    Foreign Key (snippet_owner) REFERENCES users (id)
-)
+    creation_date timestamptz default current_timestamp not null,
+    expiration_date timestamptz,
+    snippet_owner integer not null,
+    foreign key (snippet_owner) references users (id)
+);
+
 
 /*
 1. Is text the correct data type for the snippet content?
