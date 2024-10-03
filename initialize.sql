@@ -9,9 +9,9 @@ create table if not exists snippets (
     snippet_id serial primary key,
     title varchar(256),
     content text not null,
-    creation_date timestamptz default current_timestamp not null,
+    creation_date timestamptz default current_timestamp,
     expiration_date timestamptz,
-    snippet_owner integer not null,
+    snippet_owner integer,
     foreign key (snippet_owner) references users (id)
 );
 
