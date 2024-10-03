@@ -16,9 +16,3 @@ create table if not exists snippets (
 
 );
 
-
-/*
-1. Is text the correct data type for the snippet content?
-2. Should the content of the snippet be included in this table?
-3. Are TIMESTAMPZ DEFAULT CURRENT_TIMESTAMP NOT NULL and TIMESTAMPZ the correct data types for creation_date and expiration_date?
-*/
