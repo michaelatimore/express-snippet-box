@@ -9,8 +9,8 @@ create table if not exists snippets (
     snippet_id uuid default gen_random_uuid() primary key,
     title varchar(256),
     content text not null,
-    creation_date timestamptz default now(),
-    expiration_date timestamptz,
+    creation_date timestamp default now(),
+    expiration_date timestamp,
     snippet_owner integer,
     foreign key (snippet_owner) references users (id)
 
