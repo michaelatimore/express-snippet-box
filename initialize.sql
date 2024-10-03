@@ -18,6 +18,5 @@ create table if not exists snippets (
 
 
 
-       creation_date timestamp default now(),
-    expiration_date timestamp,
+
   
