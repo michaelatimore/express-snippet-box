@@ -26,7 +26,7 @@ CREATE TABLE IF NOT EXISTS users (
 );
 
 CREATE TABLE IF NOT EXISTS snippets (
-    snippet_id SERIAL PRIMARY KEY,
+    snippet_id PRIMARY KEY,
     title VARCHAR(256),
     content TEXT NOT NULL,
     creation_date TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP NOT NULL,
