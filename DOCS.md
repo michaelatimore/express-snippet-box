@@ -306,4 +306,5 @@ The server.js file is then executed using the node command, which starts the ser
 * `nodemon`: A tool for automatically restarting the server when changes are detected.
 
 
-1. 1st task was to create the user and snippet table in an initialize.sql file.
+Week 1: 1st task was to create the user and snippet table in an initialize.sql file.
+Week 2:
