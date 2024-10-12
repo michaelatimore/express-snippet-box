@@ -6,7 +6,7 @@ const snippetRouter = Router();
 
 snippetRouter.get("/:user_id", getSnippetsByUser);//dynamic routes
 
-async function getSnippetsByUser(req: Request, res: Response) {//get all snippets from user by their user_idr
+async function getSnippetsByUser(req: Request, res: Response) {//get all snippets from user by their user_id
   const { user_id } = req.params;
   if (!user_id) {
     return res.status(400).json({ message: "user_id is missing" });
@@ -92,6 +92,7 @@ async function updateSnippet(req: Request, res: Response) {
   if (isNaN(parseInt(snippet_id))) {
     return res.status(400).json({ message: "snippet_id must be a number" });
   }
+  
   const { title, content, expiration_date } = req.body;
   if (expiration_date && isNaN(parseInt(expiration_date))) {
     return res
