@@ -334,3 +334,30 @@ host: The address of the PostgreSQL server (e.g., localhost or an IP address).
 port: (Optional) The port where PostgreSQL is listening. Default is 5432.
 dbname: The name of the database you want to connect to.
 Parameters: Additional connection options can be passed as URL parameters.
+
+.env file:
+DSN=postgres://postgres:password@localhost:5432/postgres\
+
+add the docker-compose.yaml file:
+Something that we should have cleaned up in the project is to make a way to rebuild the database consistently. In the root of your projects, make a docker-compose.yaml and put the following into it:
+
+name: express-snippetbox
+
+services:
+  db:
+    image: postgres
+    restart: always
+    shm_size: 128mb
+    environment:
+      POSTGRES_PASSWORD: password
+    ports:
+      - 5432:5432
+
+  adminer:
+    image: adminer
+    restart: always
+    ports:
+      - 8080:8080
+
+psql -h localhost -p 5432 -U postgres -d express_snippet
+
