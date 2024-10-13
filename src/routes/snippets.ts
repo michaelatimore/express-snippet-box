@@ -4,19 +4,20 @@ import type { Request, Response } from "express";
 
 const snippetRouter = Router();
 
-snippetRouter.get("/:user_id", getSnippetsByUser); //dynamic routes
+snippetRouter.get("/:user_id", getSnippetsByUser);//dynamic route definition
 
-async function getSnippetsByUser(req: Request, res: Response) {
-  //get all snippets from user by their user_id
+async function getSnippetsByUser(req: Request, res: Response) {//get all snippets from user by their user_id
   const { user_id } = req.params;
-  if (!user_id) {//incoming data validation    
+  if (!user_id) {
+    //incoming data validation
     return res.status(400).json({ message: "user_id is missing" });
   }
-  if (!user_id || isNaN(parseInt(user_id))) {//incoming data validation    
+  if (isNaN(parseInt(user_id))) {
+    //incoming data validation
     return res.status(400).json({ message: "user_id must be a number" });
   }
   try {
-    const snippet = await pool.query(
+    const snippet = await pool.query(//prepare the SQL query for updating the snippet
       "SELECT * FROM snippets WHERE user_id = $1",
       [user_id]
     );
@@ -27,19 +28,22 @@ async function getSnippetsByUser(req: Request, res: Response) {
   }
 }
 
-snippetRouter.get("/:user_id/:snippet_id", getAllUserSnippets); //get snippet by user and snippet id using dynamic routes
+snippetRouter.get("/:user_id/:snippet_id", getAllUserSnippets); //dynamic route definition
 
 async function getAllUserSnippets(req: Request, res: Response) {
   async (req: Request, res: Response) => {
     const { user_id, snippet_id } = req.params;
-    if (!user_id || isNaN(parseInt(user_id))) {//incoming data validation      
+    if (!user_id || isNaN(parseInt(user_id))) {
+      //incoming data validation
       return res.status(400).json({ message: "invalid user_id" });
     }
-    if (!snippet_id || isNaN(parseInt(snippet_id))) {//incoming data validation      
+    if (!snippet_id || isNaN(parseInt(snippet_id))) {
+      //incoming data validation
       return res.status(400).json({ message: "invalid snippet_id" });
     }
     try {
-      const snippets = await pool.query( //parameterized queries are used to prevent SQL injection attacks.       
+      const snippets = await pool.query(//prepare the SQL query for updating the snippet
+        //parameterized queries are used to prevent SQL injection attacks.
         "SELECT * FROM snippets WHERE user_id = $1 AND snippet_id = $2",
         [user_id, snippet_id]
       );
@@ -65,7 +69,7 @@ async function createSnippet(req: Request, res: Response) {
   }
   if (!user_id) {
     //incoming data validation
-    return res.status(400).json({ message: "user_id is missing" }); //is a value present
+    return res.status(400).json({ message: "user_id is missing" });
   }
   if (!content) {
     //incoming data validation
@@ -80,15 +84,16 @@ async function createSnippet(req: Request, res: Response) {
     return res.status(400).json({ message: "user_id must be a number" });
   }
   try {
-    const newSnippet = await pool.query(
+    const newSnippet = await pool.query(//prepare the SQL query for updating the snippet
       "INSERT INTO snippets (title, content, expiration_date, user_id) VALUES ($1, $2, $3, $4) RETURNING *",
       [title, content, expiration_date, user_id]
     );
-    res.status(201).json(newSnippet.rows[0]);//a request has succeeded and a new resource has been created and returned to the client as a JSON object.
+    res.status(201).json(newSnippet.rows[0]); //a request has succeeded and a new resource has been created and returned to the client as a JSON object.
   } catch (err) {
     console.error(err);
     if (err instanceof Error) {
-      if ("code" in err && err.code === "23503") {// Foreign key violation        
+      if ("code" in err && err.code === "23503") {
+        // Foreign key violation
         res.status(400).json({ message: "invalid user_id provided" }); //Bad request
       } else {
         res.status(500).json({ message: "failed to create snippet" });
@@ -96,34 +101,36 @@ async function createSnippet(req: Request, res: Response) {
     }
   }
 }
-
-snippetRouter.put("/:snippet_id", updateSnippet);//dynamic route
+snippetRouter.put("/:snippet_id", updateSnippet); //dynamic route definition
 
 async function updateSnippet(req: Request, res: Response) {
-  const { snippet_id } = req.params;//destructured parameters
-  if (!snippet_id) {//incoming data validation
+  const { snippet_id } = req.params; //destructured parameters
+  if (!snippet_id) {
+    //incoming data validation
     return res.status(400).json({ message: "snippet_id is missing" });
   }
-  if (isNaN(parseInt(snippet_id))) {//incoming data validation
+  if (isNaN(parseInt(snippet_id))) {
+    //incoming data validation
     return res.status(400).json({ message: "snippet_id must be a number" });
   }
 
   const { title, content, expiration_date } = req.body;
-  if (expiration_date && isNaN(parseInt(expiration_date))) {//incoming data validation
+  if (expiration_date && isNaN(parseInt(expiration_date))) {
+    //incoming data validation
     return res
       .status(400)
       .json({ message: "expiration_date must be a number" });
   }
   try {
-    const snippet = (
-      await pool.query("select from snippets where id = $1", [snippet_id])
+    const snippet = (//prepare the SQL query for updating the snippet
+      await pool.query("select * from snippets where id = $1", [snippet_id])
     ).rows[0];
     const sql = `
     UPDATE snippets
     SET title = $1, content = $2, expiration_date = $3
     WHERE snippet_id = $4
     `;
-    const args = [
+    const args = [// Prepare the arguments for the update query, using existing values if not provided
       title ?? snippet.title,
       content ?? snippet.content,
       expiration_date ?? snippet.expiration_date,
@@ -141,14 +148,16 @@ async function updateSnippet(req: Request, res: Response) {
   }
 }
 
-snippetRouter.delete("/:snippet_id", deleteSnippet);
+snippetRouter.delete("/:snippet_id", deleteSnippet);//dynamic route definition
 
 async function deleteSnippet(req: Request, res: Response) {
   const { snippet_id } = req.params; //destructured parameter
-  if (!snippet_id) {//incoming data validation
+  if (!snippet_id) {
+    //incoming data validation
     return res.status(400).json({ message: "snippet_id is missing" });
   }
-  if (isNaN(parseInt(snippet_id))) {//incoming data validation
+  if (isNaN(parseInt(snippet_id))) {
+    //incoming data validation
     return res.status(400).json({ message: "snippet_id must be a number" });
   }
   try {

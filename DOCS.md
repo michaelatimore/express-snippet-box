@@ -361,3 +361,9 @@ services:
 
 psql -h localhost -p 5432 -U postgres -d express_snippet
 
+created the routes for the snippets:
+destructured parameter to get the element
+validate all incoming data to the server
+error checks
+
+
