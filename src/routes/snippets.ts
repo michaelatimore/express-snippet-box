@@ -59,12 +59,12 @@ async function getSnippet(req: Request, res: Response) {
 
 snippetRouter.post("/", createSnippet);
 async function createSnippet(req: Request, res: Response) {
-  const { title, content, expiration_date, user_id } = req.body;
+  const { title, content, expirationDate, userId } = req.body;
   if (!title) {
     //incoming data validation
     return res.status(400).json({ message: "title is missing" });
   }
-  if (!user_id) {
+  if (!userId) {
     //incoming data validation
     return res.status(400).json({ message: "user_id is missing" });
   }
@@ -72,11 +72,11 @@ async function createSnippet(req: Request, res: Response) {
     //incoming data validation
     return res.status(400).json({ message: "content is missing" });
   }
-  if (!expiration_date) {
+  if (!expirationDate) {
     //incoming data validation
     return res.status(400).json({ message: "expiration_date is missing" });
   }//parseIn the expiration date and make sure it's greater than zero
-  if (isNaN(parseInt(user_id))) {
+  if (isNaN(parseInt(userId))) {
     //incoming data validation
     return res.status(400).json({ message: "user_id must be a number" });
   }
@@ -84,45 +84,44 @@ async function createSnippet(req: Request, res: Response) {
     const newSnippet = await pool.query(
       //prepare the SQL query for updating the snippet
       "INSERT INTO snippets (title, content, expiration_date, user_id) VALUES ($1, $2, $3, $4) RETURNING *",
-      [title, content, expiration_date, user_id]
+      [title, content, expirationDate, userId]
     );
     res.status(201).json(newSnippet.rows[0]); //a request has succeeded and a new resource has been created and returned to the client as a JSON object.
-  } catch (err) {
+  }catch (err: any) {
     console.error(err);
-  if (err instanceof Error) {
-    if ("code" in err && err.code === "23503") {
+    if (err.code === "23503") {
       // Foreign key violation
-      res.status(400).json({ message: "invalid user_id provided" }); //Bad request
+      res.status(400).json({ message: "invalid user id provided" });
     } else {
       res.status(500).json({ message: "failed to create snippet" });
     }
   }
  }
-}
+
 
 snippetRouter.put("/:snippetId", updateSnippet); //dynamic route definition
 
 async function updateSnippet(req: Request, res: Response) {
-  const { snippetId } = req.params; //destructured parameters
+  const { snippetId } = req.params; //destructured parameters. used to identify which snippet to update
   if (!snippetId) {
     //incoming data validation
-    return res.status(400).json({ message: "snippet_id is missing" });
+    return res.status(400).json({ message: "snippet id is missing" });
   }
   if (isNaN(parseInt(snippetId))) {
     //incoming data validation
-    return res.status(400).json({ message: "snippet_id must be a number" });
+    return res.status(400).json({ message: "snippet id must be a number" });
   }
 
-  const { title, content, expiration_date } = req.body;
-  if (expiration_date && isNaN(parseInt(expiration_date))) {
+  const { title, content, expirationDate } = req.body;//contains the new information to update the snippet with.
+  if (expirationDate && isNaN(parseInt(expiration_date))) {
     //incoming data validation
     return res
       .status(400)
-      .json({ message: "expiration_date must be a number" });
+      .json({ message: "expiration date must be a number" });
   }
   try {
     const snippet = //prepare the SQL query for updating the snippet
-    (await pool.query("select * from snippets where id = $1", [snippet_id]))
+    (await pool.query("select * from snippets where id = $1", [snippetId]))
       .rows[0];
     const sql = `
     UPDATE snippets
@@ -133,7 +132,7 @@ async function updateSnippet(req: Request, res: Response) {
       // Prepare the arguments for the update query, using existing values if not provided
       title ?? snippet.title,
       content ?? snippet.content,
-      expiration_date ?? snippet.expiration_date,
+      expirationDate ?? snippet.expiration_date,
       snippetId,
     ];
     const result = await pool.query(sql, args);
