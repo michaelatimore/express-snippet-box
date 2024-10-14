@@ -1,8 +1,6 @@
 import { Router } from "express";
 import { pool } from "../db/db.js";
-
 import type { Request, Response } from "express";
-
 
 const userRouter = Router();
 
@@ -26,8 +24,8 @@ async function createUser (req: Request, res: Response) {
     return res.status(400).json({ message: "password is missing" });
   }
   // Email format validation using string.match() and a regex. The match() method of String values retrieves the result of matching this string against a regular expression.
-  const emailRegex = /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$/;
-  if (!email.match(emailRegex)) {
+  const emailRx = "^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$"
+    if (!email.match(emailRx)) {
     return res.status(400).json({ message: "Invalid email format" });
   } 
 
@@ -39,6 +37,6 @@ async function createUser (req: Request, res: Response) {
     res.status(500).json({ message: "Failed to create user" });
 };
 
-export { userRouter };
+export default userRouter; //export { userRouter };
 
 //const emailRx = "^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$"
