@@ -10,14 +10,14 @@ async function createUser (req: Request, res: Response) {
   /*validation of data that is required: email, password, first_name, last_name
     validation of a valid email address using string.match(regex)
   */
- const { email, first_name, last_name, password } = req.body;
+ const { email, firstName, lastName, password } = req.body;
  if (!email) {
    return res.status(400).json({ message: "email is missing" });
  }
- if (!first_name){
+ if (!firstName){
    return res.status(400).json({ message: "first_name is missing" });
   }
-  if (!last_name){
+  if (!lastName){
     return res.status(400).json({ message: "last_name is missing" });
   }
   if (!password){
