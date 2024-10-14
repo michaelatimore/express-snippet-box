@@ -33,7 +33,7 @@ async function getAllSnippetsByUserId(req: Request, res: Response) {
 snippetRouter.get("/:snippetId", getSnippet); //dynamic route definition
 
 async function getSnippet(req: Request, res: Response) {
-  const { snippetId } = req.params; 
+  const { snippetId } = req.params;
   if (!snippetId || isNaN(parseInt(snippetId))) {
     //incoming data validation
     return res.status(400).json({ message: "invalid snippet_id" });
@@ -45,12 +45,10 @@ async function getSnippet(req: Request, res: Response) {
       "SELECT * FROM snippets WHERE snippet_id = $1",
       [snippetId]
     );
-  if (snippets.rows.length === 0) {
-    return res
-      .status(404)
-      .json({ message: "no snippet with that id found" });
-  }
-  res.json(snippets.rows[0]); //sends the data of the found snippet back to the client as a JSON object.
+    if (snippets.rows.length === 0) {
+      return res.status(404).json({ message: "no snippet with that id found" });
+    }
+    res.json(snippets.rows[0]); //sends the data of the found snippet back to the client as a JSON object.
   } catch (err) {
     console.error(err);
     res.status(500).json({ message: "failed to retrieve snippet" });
@@ -75,7 +73,12 @@ async function createSnippet(req: Request, res: Response) {
   if (!expirationDate) {
     //incoming data validation
     return res.status(400).json({ message: "expiration_date is missing" });
-  }//parseIn the expiration date and make sure it's greater than zero
+  }
+  if (isNaN(parseInt(expirationDate)) || parseInt(expirationDate) <= 0) {
+    return res
+      .status(400)
+      .json({ message: "expiration date must be a positive number" });
+  }
   if (isNaN(parseInt(userId))) {
     //incoming data validation
     return res.status(400).json({ message: "user_id must be a number" });
@@ -87,7 +90,7 @@ async function createSnippet(req: Request, res: Response) {
       [title, content, expirationDate, userId]
     );
     res.status(201).json(newSnippet.rows[0]); //a request has succeeded and a new resource has been created and returned to the client as a JSON object.
-  }catch (err: any) {
+  } catch (err: any) {
     console.error(err);
     if (err.code === "23503") {
       // Foreign key violation
@@ -96,8 +99,7 @@ async function createSnippet(req: Request, res: Response) {
       res.status(500).json({ message: "failed to create snippet" });
     }
   }
- }
-
+}
 
 snippetRouter.put("/:snippetId", updateSnippet); //dynamic route definition
 
@@ -112,8 +114,8 @@ async function updateSnippet(req: Request, res: Response) {
     return res.status(400).json({ message: "snippet id must be a number" });
   }
 
-  const { title, content, expirationDate } = req.body;//contains the new information to update the snippet with.
-  if (expirationDate && isNaN(parseInt(expiration_date))) {
+  const { title, content, expirationDate } = req.body; //contains the new information to update the snippet with.
+  if (expirationDate && isNaN(parseInt(expirationDate))) {
     //incoming data validation
     return res
       .status(400)
@@ -121,8 +123,8 @@ async function updateSnippet(req: Request, res: Response) {
   }
   try {
     const snippet = //prepare the SQL query for updating the snippet
-    (await pool.query("select * from snippets where id = $1", [snippetId]))
-      .rows[0];
+      (await pool.query("SELECT * FROM SNIPPETS WHERE id = $1", [snippetId]))
+        .rows[0];
     const sql = `
     UPDATE snippets
     SET title = $1, content = $2, expiration_date = $3
@@ -150,7 +152,7 @@ async function updateSnippet(req: Request, res: Response) {
 snippetRouter.delete("/:snippetId", deleteSnippet); //dynamic route definition
 
 async function deleteSnippet(req: Request, res: Response) {
-  const { snippetId } = req.params; //destructured parameter
+  const { snippetId } = req.params;
   if (!snippetId) {
     //incoming data validation
     return res.status(400).json({ message: "snippet_id is missing" });

@@ -31,7 +31,8 @@ async function createUser (req: Request, res: Response) {
   } 
 
   try {//prepare the SQL query for updating the snippet
-    const newUser = await pool.query("INSERT INTO users (email, first_name, last_name, password) VALUES ($1, $2, $3, $4) RETURNING *", [email, first_name, last_name, password]);
+    const newUser = await pool.query("INSERT INTO users (email, first_name, last_name, password) VALUES ($1, $2, $3, $4) RETURNING *", 
+    [email, firstName, lastName, password]);
     res.status(201).json(newUser.rows[0]);
   } catch (err) {
     console.error(err);
