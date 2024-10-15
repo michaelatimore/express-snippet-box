@@ -4,14 +4,14 @@ import type { Request, Response } from "express";
 
 const snippetRouter = Router();
 
-snippetRouter.get("/all/:userId", getAllSnippetsByUserId); //dynamic route definition
+snippetRouter.get("/all/:userId", getAllSnippetsByUserId);//dynamic route definition
 
 async function getAllSnippetsByUserId(req: Request, res: Response) {
   //get all snippets from user by their user_id
   const { userId } = req.params;
   if (!userId) {
     //incoming data validation
-    return res.status(400).json({ message: "user id is missing" });
+    return res.status(400).json({ message: "user id is missing" });//Bad Request
   }
   if (isNaN(parseInt(userId))) {
     //incoming data validation
@@ -20,13 +20,13 @@ async function getAllSnippetsByUserId(req: Request, res: Response) {
   try {
     const snippet = await pool.query(
       //prepare the SQL query for updating the snippet
-      "SELECT * FROM snippets WHERE user_id = $1",
+      "select * from snippets where user_id = $1",
       [userId]
     );
     res.json(snippet.rows);
   } catch (err) {
     console.error(err);
-    res.status(500).json({ message: "Failed to retrieve snippets" });
+    res.status(500).json({ message: "failed to retrieve snippets" });//Internal Server Error
   }
 }
 
@@ -36,17 +36,17 @@ async function getSnippet(req: Request, res: Response) {
   const { snippetId } = req.params;
   if (!snippetId || isNaN(parseInt(snippetId))) {
     //incoming data validation
-    return res.status(400).json({ message: "invalid snippet_id" });
+    return res.status(400).json({ message: "invalid snippet id" });
   }
   try {
     const snippets = await pool.query(
       //prepare the SQL query for updating the snippet
       //parameterized queries are used to prevent SQL injection attacks.
-      "SELECT * FROM snippets WHERE snippet_id = $1",
+      "select * from snippets where snippet_id = $1",
       [snippetId]
     );
     if (snippets.rows.length === 0) {
-      return res.status(404).json({ message: "no snippet with that id found" });
+      return res.status(404).json({ message: "no snippet with that id found" });//"Not Found
     }
     res.json(snippets.rows[0]); //sends the data of the found snippet back to the client as a JSON object.
   } catch (err) {
@@ -81,7 +81,7 @@ async function createSnippet(req: Request, res: Response) {
   }
   if (isNaN(parseInt(userId))) {
     //incoming data validation
-    return res.status(400).json({ message: "user_id must be a number" });
+    return res.status(400).json({ message: "user_ d must be a number" });
   }
   try {
     const newSnippet = await pool.query(
@@ -90,8 +90,9 @@ async function createSnippet(req: Request, res: Response) {
       [title, content, expirationDate, userId]
     );
     res.status(201).json(newSnippet.rows[0]); //a request has succeeded and a new resource has been created and returned to the client as a JSON object.
-  } catch (err: any) {
-    console.error(err);
+  } catch (err: any) {/*Typescript Error Object type guard: if (err instanceof Error && 'code' in err && err.code === "23503"). By default, Typescript treats the error as unknown. 
+   With err as unknown, you can't directly access properties or methods on it without first narrowing its type. Narrow it's type. Using 'any' overrides the type checking.*/ 
+   console.error(err);
     if (err.code === "23503") {
       // Foreign key violation
       res.status(400).json({ message: "invalid user id provided" });
@@ -115,12 +116,7 @@ async function updateSnippet(req: Request, res: Response) {
   }
 
   const { title, content, expirationDate } = req.body; //contains the new information to update the snippet with.
-  if (expirationDate && isNaN(parseInt(expirationDate))) {
-    //incoming data validation
-    return res
-      .status(400)
-      .json({ message: "expiration date must be a number" });
-  }
+
   try {
     const snippet = //prepare the SQL query for updating the snippet
       (await pool.query("SELECT * FROM SNIPPETS WHERE id = $1", [snippetId]))
@@ -131,7 +127,7 @@ async function updateSnippet(req: Request, res: Response) {
     WHERE snippet_id = $4
     `;
     const args = [
-      // Prepare the arguments for the update query, using existing values if not provided
+      //prepare the arguments for the update query, using existing values if not provided. this allows for only the fields provided in the request body
       title ?? snippet.title,
       content ?? snippet.content,
       expirationDate ?? snippet.expiration_date,
@@ -149,27 +145,27 @@ async function updateSnippet(req: Request, res: Response) {
   }
 }
 
-snippetRouter.delete("/:snippetId", deleteSnippet); //dynamic route definition
+snippetRouter.delete("/:snippetId", deleteSnippet);//dynamic route definition
 
 async function deleteSnippet(req: Request, res: Response) {
   const { snippetId } = req.params;
   if (!snippetId) {
     //incoming data validation
-    return res.status(400).json({ message: "snippet_id is missing" });
+    return res.status(400).json({ message: "snippet id is missing" });
   }
   if (isNaN(parseInt(snippetId))) {
     //incoming data validation
-    return res.status(400).json({ message: "snippet_id must be a number" });
+    return res.status(400).json({ message: "snippet id must be a number" });
   }
   try {
     const deletedSnippet = await pool.query(
-      "DELETE FROM snippets WHERE id = $1",
+      "delete from snippets where id = $1",
       [snippetId]
     );
     if (deletedSnippet.rows.length === 0) {
-      res.status(404).json({ message: "Snippet not found" });
+      res.status(404).json({ message: "snippet not found" });
     } else {
-      res.json({ message: "Snippet successfully deleted" });
+      res.json({ message: "snippet successfully deleted" });
     }
   } catch (err) {
     console.error(err);
