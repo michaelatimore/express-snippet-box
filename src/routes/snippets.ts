@@ -74,14 +74,14 @@ async function createSnippet(req: Request, res: Response) {
     //incoming data validation
     return res.status(400).json({ message: "expiration_date is missing" });
   }
-  if (isNaN(parseInt(expirationDate)) || parseInt(expirationDate) <= 0) {
+  if (isNaN(parseInt(expirationDate)) || parseInt(expirationDate) <= 0) {//Values in req.params are always strings so they have to be parsed to integers.
     return res
       .status(400)
       .json({ message: "expiration date must be a positive number" });
   }
   if (isNaN(parseInt(userId))) {
     //incoming data validation
-    return res.status(400).json({ message: "user_ d must be a number" });
+    return res.status(400).json({ message: "user id must be a number" });
   }
   try {
     const newSnippet = await pool.query(
@@ -90,8 +90,12 @@ async function createSnippet(req: Request, res: Response) {
       [title, content, expirationDate, userId]
     );
     res.status(201).json(newSnippet.rows[0]); //a request has succeeded and a new resource has been created and returned to the client as a JSON object.
-  } catch (err: any) {/*Typescript Error Object type guard: if (err instanceof Error && 'code' in err && err.code === "23503"). By default, Typescript treats the error as unknown. 
-   With err as unknown, you can't directly access properties or methods on it without first narrowing its type. Narrow it's type. Using 'any' overrides the type checking.*/ 
+  } catch (err: any) {
+    /*
+   *Typescript Error Object* type guard: if (err instanceof Error && 'code' in err && err.code === "23503"). By default, Typescript treats the error as unknown. 
+   With err as unknown, you can't directly access properties or methods on it without first narrowing its type. Narrow it's type. Using 'any' overrides the type checking.
+   You can then access the code property of the PostgreSQL error object.
+   */ 
    console.error(err);
     if (err.code === "23503") {
       // Foreign key violation
