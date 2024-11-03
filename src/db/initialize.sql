@@ -17,3 +17,9 @@ create table if not exists snippets(
     expiration_date int not null,
     user_id int not null references users(id) on delete cascade
 );
+
+create table if not exists tokens (
+    hash text primary key,
+    user_id int not null references users(id) on delete cascade,
+    expiry int not null
+);
