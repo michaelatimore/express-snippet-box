@@ -3,6 +3,7 @@ import { pool } from "../db/db.js";
 import type { Request, Response } from "express";
 import bcrypt from "bcrypt";
 import { createHash, randomBytes } from "crypto";
+import { db } from "../db/db.js";
 
 type TokenModel = {
   plaintext: string;
@@ -23,44 +24,19 @@ userRouter.delete("/:userId", deleteUser);
 
 async function createUser(req: Request, res: Response) {
   const { email, firstName, lastName, password } = req.body;
-  if (!email) {
-    return res.status(400).json({ message: "Email is missing" }); //Bad Request
-  }
-
-  const emailRx =
-    "^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$";
-  if (!email.match(emailRx)) {
-    return res.status(400).json({ message: "Invalid email format" });
-  }
-  if (!firstName) {
-    return res.status(400).json({ message: "First name is missing" });
-  }
-  if (!lastName) {
-    return res.status(400).json({ message: "Last name is missing" });
-  }
-  if (!password) {
-    return res.status(400).json({ message: "Password is missing" });
-  }
-  if (password.length < 8) {
-    return res
-      .status(400)
-      .json({ message: "Minimum password length is 8 characters" });
-  }
 
   try {
-    const passwordHash = await bcrypt.hash(password, 10);
-    //prepare the SQL query for updating the snippet
-    const newUser = await pool.query(
-      //prepared statement
-      "INSERT INTO users (email, first_name, last_name, password, email_verified) VALUES ($1, $2, $3, $4, $5) RETURNING *",
-      [email, firstName, lastName, passwordHash, false]
-    );
-    res.status(201).json(newUser.rows[0]); //returns the result object and uses it's rows property to get the result of the query
+    const newUser = await db.Models.Users.createUser(email, firstName, lastName, password);
+    res.status(201).json(newUser);// successful request resulting in the creation of a new resource
   } catch (err) {
-    console.error(err);
-    res.status(500).json({ message: "Failed to create user" }); //Internal Server Error
+    if (err instanceof Error) {
+      res.status(400).json({ message: err.message });
+    } else {
+      res.status(500).json({ message: "Failed to create user" });
+    }
   }
 }
+
 
 async function userLogin(req: Request, res: Response) {
   //1.Get the email and password from the request body
@@ -155,6 +131,49 @@ async function userLogin(req: Request, res: Response) {
 export { userRouter };
 
 /*
+
+async function createUser(req: Request, res: Response) {
+  const { email, firstName, lastName, password } = req.body;
+  if (!email) {
+    return res.status(400).json({ message: "Email is missing" }); //Bad Request
+  }
+
+  const emailRx =
+    "^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$";
+  if (!email.match(emailRx)) {
+    return res.status(400).json({ message: "Invalid email format" });
+  }
+  if (!firstName) {
+    return res.status(400).json({ message: "First name is missing" });
+  }
+  if (!lastName) {
+    return res.status(400).json({ message: "Last name is missing" });
+  }
+  if (!password) {
+    return res.status(400).json({ message: "Password is missing" });
+  }
+  if (password.length < 8) {
+    return res
+      .status(400)
+      .json({ message: "Minimum password length is 8 characters" });
+  }
+
+  try {
+    const passwordHash = await bcrypt.hash(password, 10);
+    //prepare the SQL query for updating the snippet
+    const newUser = await pool.query(
+      //prepared statement
+      "INSERT INTO users (email, first_name, last_name, password, email_verified) VALUES ($1, $2, $3, $4, $5) RETURNING *",
+      [email, firstName, lastName, passwordHash, false]
+    );
+    res.status(201).json(newUser.rows[0]); //returns the result object and uses it's rows property to get the result of the query
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "Failed to create user" }); //Internal Server Error
+  }
+}
+
+
   validation of data that is required: email, first_name, last_name, password
 
   async function userLogin
