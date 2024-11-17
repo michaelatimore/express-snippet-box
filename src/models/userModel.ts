@@ -6,16 +6,18 @@ import {
   validatePassword,
   validateFields,
 } from "./validator.js";
+import { Tokens } from "./tokenModel.js";
 
-type UserModel = {
-  email: string;
-  firstName: string;
-  lastName: string;
-  password: string;
-};
+// type UserModel = {
+//   email: string;
+//   firstName: string;
+//   lastName: string;
+//   password: string;
+// };
 
 export class User {
   private pool: pg.Pool;
+  user: any;
 
   constructor(pool: pg.Pool) {
     assert(pool, "pool is required");
@@ -44,71 +46,54 @@ export class User {
   }
 
   async getUserByEmail(email: string) {
-    const result = await this.pool.query(
-      "SELECT * FROM users WHERE email = $1",
-      [email]
-    );
+    const user = await this.pool.query("SELECT * FROM users WHERE email = $1", [
+      email,
+    ]);
 
-    if (result.rows.length === 0) {
+    if (user.rows.length === 0) {
       throw new Error("User not found");
     }
     return {
-      id: result.rows[0].id,
-      email: result.rows[0].email,
-      firstName: result.rows[0].first_name,
-      lastName: result.rows[0].last_name,
-      passwordHash: result.rows[0].password,
+      id: user.rows[0].id,
+      email: user.rows[0].email,
+      firstName: user.rows[0].first_name,
+      lastName: user.rows[0].last_name,
+      passwordHash: user.rows[0].password,
     };
   }
-}
 
-/*async userLogin(email: string, password: string) {
-    // Validate email and password
-    if (!email) {
-      throw new Error("Email is missing");
-    }
-  
-    const emailRx = /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$/;
-    if (!email.match(emailRx)) {
-      throw new Error("Invalid email format");
-    }
-  
-    if (!password) {
-      throw new Error("Password is missing");
-    }
-  
-    if (password.length < 8) {
-      throw new Error("Minimum password length is 8 characters");
-    }
-  
+  async userLogin(email: string, password: string) {
+    const tokens = new Tokens(this.pool);
     try {
+      // Validate email and password
+      validateEmail(email);
+      validatePassword(password);
+
       // Get user from the database by email
-      const result = await this.pool.query("SELECT * FROM users WHERE email = $1", [email]);
-      if (result.rows.length === 0) {
-        throw new Error("User not found");
-      }
-  
-      // Get the user
-      const user = result.rows[0];
-  
+
+      this.getUserByEmail(email);
+
       // Verify the password
-      const isPasswordValid = await bcrypt.compare(password, user.password);
+      const isPasswordValid = await bcrypt.compare(
+        password,
+        this.user.passwordHash
+      );
       if (!isPasswordValid) {
         throw new Error("Credentials invalid");
       }
-  
-      // Check if the user's email is verified (commented out for now)
-      /*
-      if (!user.email_verified) {
+
+      // Check if the user's email is verified
+
+      if (!this.user.email_verified) {
         throw new Error("Email not verified");
       }
-      
-  
+      const authenticationToken = tokens.generateAuthenticationToken(this.user.id);
+
       // Return the user if login is successful
-      return user;
+      return this.user;
     } catch (err) {
       console.error("Login failed: ", err);
       throw err;
     }
   }
-}*/
+}

@@ -1,6 +1,6 @@
 import assert from "assert";
 import pg from "pg";
-import { Users } from "../models/userModel.js";
+import { User } from "../models/userModel.js";
 import { Tokens } from "../models/tokenModel.js";
 const { Pool } = pg;
 
@@ -11,7 +11,7 @@ export const pool = new Pool({ connectionString });
 
 export const db = {
   Models: {
-    Users: new Users(pool),
+    Users: new User(pool),
     Tokens: new Tokens(pool),
   },
 };

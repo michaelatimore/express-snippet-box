@@ -139,11 +139,11 @@ async function updateSnippet(req: Request, res: Response) {
       expirationDate ?? snippet.expiration_date,
       snippetId,
     ];
-    const result = await pool.query(sql, args);
-    if (result.rows.length === 0) {
+    const user = await pool.query(sql, args);
+    if (user.rows.length === 0) {
       res.status(404).json({ message: "Snippet not found" });
     } else {
-      res.json(result.rows[0]);
+      res.json(user.rows[0]);
     }
   } catch (err) {
     console.error(err);
