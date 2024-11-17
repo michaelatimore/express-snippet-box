@@ -49,3 +49,18 @@ export function validateFields(
     throw new Error("Password is missing");
   }
 }
+
+export function validateSnippetFields(title: string, content: string, expirationDate: number, userId: number) {
+  if (!title) {
+    throw new Error("Title is missing");
+  }
+  if (!content) {
+    throw new Error("Content is missing");
+  }
+  if (!expirationDate || isNaN(expirationDate) || expirationDate <= 0) {
+    throw new Error("Expiration date must be a positive number");
+  }
+  if (!userId || isNaN(userId)) {
+    throw new Error("User ID must be a number");
+  }
+}
