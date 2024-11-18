@@ -70,7 +70,6 @@ export class User {
       validatePassword(password);
 
       // Get user from the database by email
-
       this.getUserByEmail(email);
 
       // Verify the password
