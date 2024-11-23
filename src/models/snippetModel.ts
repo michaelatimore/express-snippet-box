@@ -26,7 +26,8 @@ export class Snippet {
         userId: number
     ) {
     try {
-     validateSnippetFields(title, content, expirationDate, userId);
+      validateSnippetFields(title, content, expirationDate, userId);
+      
       const newSnippet = await this.pool.query(
         "INSERT INTO snippets (title, content, expiration_date, user_id) VALUES ($1, $2, $3, $4) RETURNING *",
         [title, content, expirationDate, userId]
@@ -34,6 +35,19 @@ export class Snippet {
       return newSnippet.rows[0];
     } catch (err) {
       console.error("Failed to create snippet: ", err);
+    }
+  }
+
+  async getAllSnippetsByUserId(userId: number) {
+    try {
+      const result = await this.pool.query(
+        "SELECT * FROM snippets WHERE user_id = $1",
+        [userId]
+      );
+      return result.rows;
+    } catch (err) {
+      console.error("Failed to retrieve snippets: ", err);
+      throw err;      
     }
   }
 
@@ -48,24 +62,14 @@ export class Snippet {
       }
       return result.rows[0];
     } catch (err) {
-        console.error("Failed to retrieve snippet: ", error);
+      console.error("Failed to retrieve snippet: ", error);
+      throw err;
     }
   }
 
-  async getAllSnippetsByUserId(userId: number) {
-    try {
-      const result = await this.pool.query(
-        "SELECT * FROM snippets WHERE user_id = $1",
-        [userId]
-      );
-      return result.rows;
-    } catch (err) {
-        console.error("Failed to retrieve snippets: ", err);
-      
-    }
-  }
+  
 
-  async updateSnippet(snippetId: number, title: string, content: string, expirationDate: number) {
+  async updateSnippet(snippetId: number, title: string, content: string, expirationDate: number) {//do I need to be able to update the expiration date?
     try {
       const result = await this.pool.query(
         "UPDATE snippets SET title = $1, content = $2, expiration_date = $3 WHERE snippet_id = $4 RETURNING *",

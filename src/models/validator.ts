@@ -1,10 +1,6 @@
 const emailRx =
   "^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$";
 
-/**
- * Validate that the given string is a valid email address. If the input is
- * invalid, throws an Error with a description of the problem.
- */
 export function validateEmail(email: string) {
   if (!email) {
     throw new Error("Email is missing");
@@ -14,10 +10,6 @@ export function validateEmail(email: string) {
   }
 }
 
-/**
- * Validate that the given password string is valid. If the password is invalid,
- * throws an Error with a description of the problem.
- *  */
 export function validatePassword(password: string) {
   if (!password) {
     throw new Error("Password is missing");
@@ -27,11 +19,6 @@ export function validatePassword(password: string) {
   }
 }
 
-/**
- * Validate the provided inputs for creating a user account. This function checks
- * for the presence of required fields and validates specific constraints such as
- * the minimum password length.
- */
 export function validateFields(
   email: string,
   firstName: string,
@@ -50,6 +37,12 @@ export function validateFields(
   }
 }
 
+export function validateSnippetId(snippetId: number) {
+  if (!snippetId || (typeof snippetId === 'string' && isNaN(parseInt(snippetId)))) {
+    throw new Error("Invalid snippet ID");
+  }  
+}
+
 export function validateSnippetFields(title: string, content: string, expirationDate: number, userId: number) {
   if (!title) {
     throw new Error("Title is missing");
@@ -64,3 +57,4 @@ export function validateSnippetFields(title: string, content: string, expiration
     throw new Error("User ID must be a number");
   }
 }
+

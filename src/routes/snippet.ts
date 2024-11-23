@@ -1,125 +1,112 @@
 import { Router } from "express";
-import { pool } from "../db/db.js";
 import type { Request, Response } from "express";
+import { db } from "../db/db.js";
 import { ensureAuthenticated } from "./auth.js";
-import { Snippet } from "../models/snippetModel.js";
+import { validateSnippetId, validateSnippetFields } from "../models/validator.js";  
 
 const snippetRouter = Router();
-const snippetModel = new Snippet(pool);
 
-snippetRouter.get("/all/:userId", getAllSnippetsByUserId);
-
-async function getAllSnippetsByUserId(req: Request, res: Response) {
-  const { userId } = req.params;
-
-  if (!userId) {
-    return res.status(400).json({ message: "user id is missing" });
-  }
-
-  if (isNaN(parseInt(userId))) {
-    return res.status(400).json({ message: "user id must be a number" });
-  }
-
-  try {
-    const snippets = await snippetModel.getAllSnippetsByUserId(parseInt(userId));
-    res.json(snippets);
-  } catch (err) {
-    console.error(err);
-    res.status(500).json({ message: "failed to retrieve snippets" });
-  }
-}
-
-snippetRouter.get("/:snippetId", getSnippet);
-
-async function getSnippet(req: Request, res: Response) {
-  const { snippetId } = req.params;
-
-  if (!snippetId || isNaN(parseInt(snippetId))) {
-    return res.status(400).json({ message: "invalid snippet id" });
-  }
-
-  try {
-    const snippet = await snippetModel.getSnippetById(parseInt(snippetId));
-    res.json(snippet);
-  } catch (err) {
-    if (err instanceof Error && err.message === "Snippet not found") {
-      res.status(404).json({ message: "no snippet with that id found" });
-    } else {
-      console.error(err);
-      res.status(500).json({ message: "failed to retrieve snippet" });
-    }
-  }
-}
-
-snippetRouter.post("/", ensureAuthenticated, createSnippet);
+snippetRouter.post("/", ensureAuthenticated, createSnippet)
+snippetRouter.get("/all/:userId", ensureAuthenticated, getAllSnippetByUserId);
+snippetRouter.get("/:snippetId", ensureAuthenticated, getSnippetById);
+snippetRouter.put("/:snippetId", ensureAuthenticated, updateSnippet);
+snippetRouter.delete("/:snippetId", ensureAuthenticated, deleteSnippet);  
 
 async function createSnippet(req: Request, res: Response) {
   const { title, content, expirationDate, userId } = req.body;
-
   try {
-    const newSnippet = await snippetModel.createSnippet(title, content, expirationDate, userId);
+    validateSnippetFields(title, content, expirationDate, userId);
+    const newSnippet = await db.Models.Snippet.createSnippet(
+      title,
+      content,
+      expirationDate,
+      userId
+    );
     res.status(201).json(newSnippet);
-  } catch (err: any) {
-    console.error(err);
-    if (err.message === "Title is missing" || err.message === "Content is missing" || 
-        err.message === "Expiration date must be a positive number" || err.message === "User ID must be a number") {
-      res.status(400).json({ message: err.message });
-    } else if (err.code === "23503") {
-      res.status(400).json({ message: "invalid user id provided" });
-    } else {
-      res.status(500).json({ message: "failed to create snippet" });
-    }
+  }  catch (err) {
+    console.error("Failed to create snippet: ", err);
   }
 }
 
-snippetRouter.put("/:snippetId", ensureAuthenticated, updateSnippet);
-
-async function updateSnippet(req: Request, res: Response) {
-  const { snippetId } = req.params;
-  const { title, content, expirationDate } = req.body;
-
-  if (!snippetId || isNaN(parseInt(snippetId))) {
-    return res.status(400).json({ message: "invalid snippet id" });
-  }
-
+async function getAllSnippetByUserId(req: Request, res: Response) {
+  const { userId } = req.params;
   try {
-    const updatedSnippet = await snippetModel.updateSnippet(parseInt(snippetId), title, content, expirationDate);
-    res.json(updatedSnippet);
-  } catch (err) {
-    if (err instanceof Error && err.message === "Snippet not found") {
-      res.status(404).json({ message: "Snippet not found" });
-    } else {
-      console.error(err);
-      res.status(500).json({ message: "Failed to update snippet" });
+    if (userId === undefined) {
+      throw new Error("userId is undefined");
+    }
+    const snippets = await db.Models.Snippet.getAllSnippetsByUserId(parseInt(userId));
+    res.json(snippets);
+  }catch (err) {
+    console.error("Failed to retrieve snippets: ", err);
+    throw err;      
+  }
+} 
+
+  async function getSnippetById(req: Request, res: Response) {
+    const { snippetId } = req.params;
+    try {
+      if (snippetId === undefined) {
+        throw new Error("snippetId is undefined");
+      }
+      validateSnippetId(parseInt(snippetId));
+      const snippet = await db.Models.Snippet.getSnippetById(
+        parseInt(snippetId)
+      );
+      res.json(snippet);
+    } catch (err) {
+      console.error("Failed to retrieve snippet: ", err);
+      throw err;      
     }
   }
-}
+  
+  async function updateSnippet(req: Request, res: Response) {
+    const { snippetId } = req.params;
+    const { title, content, expirationDate } = req.body;
+    try {
+      if (snippetId === undefined) {
+        throw new Error("snippetId is undefined");
+      }
+      validateSnippetId(parseInt(snippetId));
+      const updatedSnippet = await db.Models.Snippet.updateSnippet(
+        parseInt(snippetId),
+        title,
+        content,
+        expirationDate
+      );
+      res.json(updatedSnippet);
+    } catch (err) {
+      console.error("Failed to update snippet: ", err);
+      throw err;
+    }
+  } 
 
-snippetRouter.delete("/:snippetId", deleteSnippet);
-
-async function deleteSnippet(req: Request, res: Response) {
-  const { snippetId } = req.params;
-
-  if (!snippetId || isNaN(parseInt(snippetId))) {
-    return res.status(400).json({ message: "invalid snippet id" });
-  }
-
-  try {
-    await snippetModel.deleteSnippet(parseInt(snippetId));
-    res.json({ message: "snippet successfully deleted" });
-  } catch (err) {
-    if (err instanceof Error && err.message === "Snippet not found") {
-      res.status(404).json({ message: "snippet not found" });
-    } else {
-      console.error(err);
-      res.status(500).json({ message: "Failed to delete snippet" });
+  async function deleteSnippet(req: Request, res: Response) {
+    const { snippetId } = req.params;
+    try {
+      if (snippetId === undefined) {
+        throw new Error("snippetId is undefined");
+      }
+      validateSnippetId(parseInt(snippetId));
+      const result = await db.Models.Snippet.deleteSnippet(parseInt(snippetId));
+      res.json(result);
+    } catch (err) {
+      console.error("Failed to delete snippet: ", err);
+      throw err;
     }
   }
-}
 
-// snippetRouter.get("/all/:userId", getAllSnippetsByUserId); //dynamic route definition
 
-// async function getAllSnippetsByUserId(req: Request, res: Response) {
+
+// import { Router } from "express";
+// import { pool } from "../db/db.js";
+// import type { Request, Response } from "express";
+// import { ensureAuthenticated } from "./auth.js";
+
+// const snippetRouter = Router();
+
+// snippetRouter.get("/all/:userId", getSnippetById); //dynamic route definition
+
+// async function getSnippetById(req: Request, res: Response) {
 //   //get all snippets from user by their user_id
 //   const { userId } = req.params;
 //   if (!userId) {
@@ -143,9 +130,9 @@ async function deleteSnippet(req: Request, res: Response) {
 //   }
 // }
 
-// snippetRouter.get("/:snippetId", getSnippet); //dynamic route definition
+// snippetRouter.get("/:snippetId", getSnippetById); //dynamic route definition
 
-// async function getSnippet(req: Request, res: Response) {
+// async function getSnippetById(req: Request, res: Response) {
 //   const { snippetId } = req.params;
 //   if (!snippetId || isNaN(parseInt(snippetId))) {
 //     //incoming data validation
@@ -206,7 +193,7 @@ async function deleteSnippet(req: Request, res: Response) {
 //     res.status(201).json(newSnippet.rows[0]); //a request has succeeded and a new resource has been created and returned to the client as a JSON object.
 //   } catch (err: any) {
 //     /*
-//    *Typescript Error Object* type guard: if (err instanceof Error && 'code' in err && err.code === "23503"). By default, Typescript treats the error as unknown. 
+//    *Typescript Error Object* type guard: if (err instanceof Error && 'code' in err && err.code === "23503"). By default, Typescript treats the error as unknown.
 //    With err as unknown, you can't directly access properties or methods on it without first narrowing its type. Narrow it's type. Using 'any' overrides the type checking.
 //    You can then access the code property of the PostgreSQL error object.
 //    */
@@ -251,11 +238,11 @@ async function deleteSnippet(req: Request, res: Response) {
 //       expirationDate ?? snippet.expiration_date,
 //       snippetId,
 //     ];
-//     const result = await pool.query(sql, args);
-//     if (result.rows.length === 0) {
+//     const user = await pool.query(sql, args);
+//     if (user.rows.length === 0) {
 //       res.status(404).json({ message: "Snippet not found" });
 //     } else {
-//       res.json(result.rows[0]);
+//       res.json(user.rows[0]);
 //     }
 //   } catch (err) {
 //     console.error(err);
@@ -290,4 +277,4 @@ async function deleteSnippet(req: Request, res: Response) {
 //     res.status(500).json({ message: "Failed to delete snippet" });
 //   }
 // }
-export { snippetRouter };
+// export { snippetRouter };
