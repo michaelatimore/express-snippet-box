@@ -3,6 +3,7 @@ import type { Request, Response } from "express";
 import bcrypt from "bcrypt";
 import { db } from "../db/db.js";
 import { validateEmail, validatePassword } from "../models/validator.js";
+import { Tokens } from "../models/tokenModel.js";
 
 const userRouter = Router();
 
@@ -24,7 +25,7 @@ async function createUser(req: Request, res: Response) {
       lastName,
       password
     );
-    res.status(201).json(newUser); // successful request usering in the creation of a new resource
+    res.status(201).json(newUser); // successful request resulting in the creation of a new resource
   } catch (err) {
     if (err instanceof Error) {
       res.status(400).json({ message: err.message });
@@ -35,23 +36,25 @@ async function createUser(req: Request, res: Response) {
 }
 
 async function userLogin(req: Request, res: Response) {
-  //1.Get the email and password from the request body
   const { email, password } = req.body;
 
   try {
-const login = await db.Models.Users.userLogin(email, password);
-    //7.authentication successful
+    validateEmail(email);
+    validatePassword(password);
+
+    const loginResult = await db.Models.Users.userLogin(email, password);
+
     res.status(200).json({
       message: "Login successful",
-      authToken: login.authToken,
+      authToken: loginResult.authToken,
     });
   } catch (err) {
-    //error instance of Error to get the specific message
     console.error(err);
-    return res.status(400).json({
-      message:
-        "Login attempt failed. Please check your credentials and try again.", //only good for bcrypt fail or email
-    });
+    if (err instanceof Error) {
+      res.status(400).json({ message: err.message });
+    } else {
+      res.status(500).json({ message: "Login attempt failed. Please try again." });
+    }
   }
 }
 
@@ -70,8 +73,8 @@ export { userRouter };
   7. authentication successful   
   return a json error message that says not verified 
 
-  Email format validation using string.match() and a regex. The match() method of String values retrieves the user of matching this string against a regular expression.  
+  Email format validation using string.match() and a regex. The match() method of String values retrieves the result of matching this string against a regular expression.  
 
   bcrypt.compare() takes the plain-text password and the hashed password, then checks if the plain-text password matches the original password used to create the hash.
-  bcrypt works by hashing the plain-text password using the same algorithm and "salt" (random data added to the hash) that was used to hash the original password. It compares the user to the stored hashed password.
+  bcrypt works by hashing the plain-text password using the same algorithm and "salt" (random data added to the hash) that was used to hash the original password. It compares the result to the stored hashed password.
   */
