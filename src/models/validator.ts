@@ -37,24 +37,29 @@ export function validateFields(
   }
 }
 
-export function validateSnippetId(snippetId: number) {
-  if (!snippetId || (typeof snippetId === 'string' && isNaN(parseInt(snippetId)))) {
+export function validateSnippetId(snippetId?: string) {
+  if (!snippetId || typeof snippetId !== "string") {
     throw new Error("Invalid snippet ID");
-  }  
+  }
 }
 
-export function validateSnippetFields(title: string, content: string, expirationDate: number, userId: number) {
+export function validateSnippetFields(
+  title: string,
+  content: string,
+  expirationDate: number,
+  userId: number
+) {
   if (!title) {
     throw new Error("Title is missing");
   }
   if (!content) {
     throw new Error("Content is missing");
   }
-  if (!expirationDate || isNaN(expirationDate) || expirationDate <= 0) {
-    throw new Error("Expiration date must be a positive number");
+  const now = Math.trunc(Date.now() / 1000);
+  if (!expirationDate || isNaN(expirationDate) || expirationDate <= now) {
+    throw new Error("Expiration date must be a future dated unix timestamp");
   }
-  if (!userId || isNaN(userId)) {
+  if (!userId || isNaN(userId) || userId < 1) {
     throw new Error("User ID must be a number");
   }
 }
-
