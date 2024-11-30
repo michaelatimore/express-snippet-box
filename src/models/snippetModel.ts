@@ -32,10 +32,17 @@ export class Snippet {
       return newSnippet.rows[0];
     } catch (err) {
       console.error("Failed to create snippet: ", err);
+      throw err;
     }
   }
 
   async getAllSnippetsByUserId(userId: number) {
+    if (userId === null || userId === undefined) {
+      throw new Error("userId is missing");
+    }
+    if (typeof userId !== "number") {
+      userId = parseInt(userId as string);
+    }
     try {
       const snippets = await this.pool.query(
         "SELECT * FROM snippets WHERE user_id = $1",
@@ -68,9 +75,9 @@ export class Snippet {
     snippetId: string,
     title: string,
     content: string,
-    expirationDate: number
+    expirationDate: number,
+    userId: any
   ) {
-    //do I need to be able to update the expiration date?
     try {
       const snippet = await this.pool.query(
         "UPDATE snippets SET title = $1, content = $2, expiration_date = $3 WHERE snippet_id = $4 RETURNING *",
@@ -87,6 +94,9 @@ export class Snippet {
   }
 
   async deleteSnippet(snippetId: string) {
+    if (snippetId === undefined) {
+      throw new Error("snippetId is missing");
+    }
     try {
       const snippet = await this.pool.query(
         "DELETE FROM snippets WHERE snippet_id = $1",

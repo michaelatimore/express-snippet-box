@@ -19,6 +19,16 @@ export function validatePassword(password: string) {
   }
 }
 
+export function validateId(id: string) {
+  if (!id) {
+    throw new Error("ID is missing");
+  }
+  if (typeof id !== "string" || id.length === 0) {
+    throw new Error("Invalid ID format");
+  }
+  // Additional validation logic can be added here if necessary
+}
+
 export function validateFields(
   email: string,
   firstName: string,

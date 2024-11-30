@@ -2,9 +2,7 @@ import { Router } from "express";
 import type { Request, Response } from "express";
 import { db } from "../db/db.js";
 import { ensureAuthenticated } from "./auth.js";
-import {
-  validateSnippetId,
-  validateSnippetFields,
+import {validateSnippetId, validateSnippetFields,
 } from "../models/validator.js";
 
 const snippetRouter = Router();
@@ -37,17 +35,17 @@ async function createSnippet(req: Request, res: Response) {
 
 async function getAllSnippetsByUserId(req: Request, res: Response) {
   const { userId } = req.params;
-  if (userId === undefined) {
-    return res.status(400).json({ message: "userId is missing" });
-  }
+  
   try {
-    const snippets = await db.Models.Snippet.getAllSnippetsByUserId(
-      parseInt(userId)
-    );
+    const snippets = await db.Models.Snippet.getAllSnippetsByUserId(parseInt(userId ?? ""));
     res.json(snippets);
   } catch (err) {
     console.error("Failed to retrieve snippets: ", err);
-    res.status(500).json({ message: "Failed to retrieve snippets" });
+    if (err instanceof Error && err.message === "Snippets not found") {
+      res.status(404).json({ message: err.message });
+    } else {
+      res.status(500).json({ message: "Failed to retrieve snippets" });
+    };
   }
 }
 
@@ -92,9 +90,7 @@ async function updateSnippet(req: Request, res: Response) {
 
 async function deleteSnippet(req: Request, res: Response) {
   const { snippetId } = req.params;
-  if (snippetId === undefined) {
-    return res.status(400).json({ message: "snippetId is missing" });
-  }
+ 
   try {
     const result = await db.Models.Snippet.deleteSnippet(snippetId!);
     res.json(result);
@@ -111,7 +107,7 @@ async function deleteSnippet(req: Request, res: Response) {
 export { snippetRouter };
 
 /*
-Typescript Error Object* type guard: if (err instanceof Error && 'code' in err && err.code === "23503"). By default, Typescript treats the error as unknown.
+Typescript Error Object type guard: if (err instanceof Error && 'code' in err && err.code === "23503"). By default, Typescript treats the error as unknown.
     With err as unknown, you can't directly access properties or methods on it without first narrowing its type. Narrow it's type. Using 'any' overrides the type checking.
     You can then access the code property of the PostgreSQL error object.
   */

@@ -2,6 +2,7 @@ import { Router } from "express";
 import type { Request, Response } from "express";
 import bcrypt from "bcrypt";
 import { db } from "../db/db.js";
+import { User } from '../models/userModel.js';
 import { validateEmail, validatePassword } from "../models/validator.js";
 
 const userRouter = Router();
@@ -35,45 +36,75 @@ async function createUser(req: Request, res: Response) {
 }
 
 async function userLogin(req: Request, res: Response) {
-  //1.Get the email and password from the request body
   const { email, password } = req.body;
-  console.log(req.body);
 
   try {
-    //2.Validate the email and password
-    validateEmail(email);
-    validatePassword(password);
-
-    //3.get user from the database by email
-
-    const user = await db.Models.Users.getUserByEmail(email);
-
-    //5.Use bcrypt.compare to verify the password
-    const isPasswordValid = await bcrypt.compare(password, user.passwordHash);
-
-    if (!isPasswordValid) {
-      return res.status(401).json({ message: "Credentials invalid" });
-    } //71-78 will be a method on userLogin
-
-    //6.check if the user's email is verified
-    /*if (!user.email_verified) {
-      return res.status(403).json({ message: "Email not verified" });
-    }*/
-
-    const plaintext = db.Models.Tokens.generateAuthenticationToken(user.id);
-
-    //7.authentication successful
+    const user = await db.Models.Users.userLogin(email, password);
     res.status(200).json({
       message: "Login successful",
-      authToken: plaintext,
+      user,
     });
   } catch (err) {
-    //error instance of Error to get the specific message
-    console.error(err);
-    return res.status(400).json({
-      message:
-        "Login attempt failed. Please check your credentials and try again.", //only good for bcrypt fail or email
-    });
+    if (err instanceof Error) {
+      res.status(400).json({ message: err.message });
+    } else {
+      res.status(500).json({ message: "Failed to login" });
+    }
+  }
+}
+
+async function getUserById(req: Request, res: Response) {
+  const { userId } = req.params;
+  try {
+  if (!req.params.userId) {
+    res.status(400).json({ message: 'User ID is required' });
+    return;
+  }
+  const user = await db.Models.Users.getUserById(req.params.userId);;
+    res.status(200).json(user);
+  } catch (err) {
+    if (err instanceof Error) {
+      res.status(404).json({ message: err.message });
+    } else {
+      res.status(500).json({ message: "Failed to get user" });
+    }
+  }
+}
+
+async function updateUser(req: Request, res: Response) {
+  const { userId } = req.params;
+  if (!userId) {
+    res.status(400).json({ message: 'User ID is required' });
+    return;
+  }
+  const { email, firstName, lastName, password } = req.body;
+  try {
+    const updatedUser = db.Models.Users.updateUser(userId, email, firstName, lastName, password);
+    res.status(200).json(updatedUser);
+  } catch (err) {
+    if (err instanceof Error) {
+      res.status(400).json({ message: err.message });
+    } else {
+      res.status(500).json({ message: "Failed to update user" });
+    }
+  }
+}
+
+async function deleteUser(req: Request, res: Response) {
+  const { userId } = req.params;
+  // if (!userId) {
+  //   res.status(400).json({ message: 'User ID is required' });
+  //   return;
+  // }
+  try {db.Models.Users.
+    const deletedUserId = db.Models.Users.deleteUser(userId);
+    res.status(200).json(deletedUserId);
+  } catch (err) {
+    if (err instanceof Error) {
+      res.status(404).json({ message: err.message });
+    } else {
+      res.status(500).json({ message: "Failed to delete user" });
+    }
   }
 }
 
