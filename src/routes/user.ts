@@ -2,7 +2,7 @@ import { Router } from "express";
 import type { Request, Response } from "express";
 import bcrypt from "bcrypt";
 import { db } from "../db/db.js";
-import { User } from '../models/userModel.js';
+import { User } from "../models/userModel.js";
 import { validateEmail, validatePassword } from "../models/validator.js";
 
 const userRouter = Router();
@@ -56,11 +56,11 @@ async function userLogin(req: Request, res: Response) {
 async function getUserById(req: Request, res: Response) {
   const { userId } = req.params;
   try {
-  if (!req.params.userId) {
-    res.status(400).json({ message: 'User ID is required' });
-    return;
-  }
-  const user = await db.Models.Users.getUserById(req.params.userId);;
+    if (!req.params.userId) {
+      res.status(400).json({ message: "User ID is required" });
+      return;
+    }
+    const user = await db.Models.Users.getUserById(req.params.userId);
     res.status(200).json(user);
   } catch (err) {
     if (err instanceof Error) {
@@ -74,12 +74,18 @@ async function getUserById(req: Request, res: Response) {
 async function updateUser(req: Request, res: Response) {
   const { userId } = req.params;
   if (!userId) {
-    res.status(400).json({ message: 'User ID is required' });
+    res.status(400).json({ message: "User ID is required" });
     return;
   }
   const { email, firstName, lastName, password } = req.body;
   try {
-    const updatedUser = db.Models.Users.updateUser(userId, email, firstName, lastName, password);
+    const updatedUser = db.Models.Users.updateUser(
+      userId,
+      email,
+      firstName,
+      lastName,
+      password
+    );
     res.status(200).json(updatedUser);
   } catch (err) {
     if (err instanceof Error) {
@@ -96,7 +102,7 @@ async function deleteUser(req: Request, res: Response) {
   //   res.status(400).json({ message: 'User ID is required' });
   //   return;
   // }
-  try {db.Models.Users.
+  try {
     const deletedUserId = db.Models.Users.deleteUser(userId);
     res.status(200).json(deletedUserId);
   } catch (err) {
