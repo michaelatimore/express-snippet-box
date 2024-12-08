@@ -5,7 +5,7 @@ import assert from "assert";
 export class Tokens {
   pool: pg.Pool;
   constructor(pool: pg.Pool) {
-    assert(pool, "pool is required");
+    //assert(pool, "pool is required");
     this.pool = pool;
   }
   async generateAuthenticationToken(userId: string) {
