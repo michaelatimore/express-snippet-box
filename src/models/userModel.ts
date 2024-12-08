@@ -17,7 +17,7 @@ type UserModel = {
 };
 
 export class User {
-  private pool: pg.Pool;
+  pool: pg.Pool;
 
   constructor(pool: pg.Pool) {
     assert(pool, "pool is required");

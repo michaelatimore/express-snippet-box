@@ -1,14 +1,16 @@
 import { createHash, randomBytes } from "crypto";
 import type pg from "pg";
+import assert from "assert";
 
 export class Tokens {
   pool: pg.Pool;
   constructor(pool: pg.Pool) {
+    assert(pool, "pool is required");
     this.pool = pool;
   }
   async generateAuthenticationToken(userId: string) {
     // generate a random token plaintext
-    const plaintext = randomBytes(32).toString();
+    const plaintext = randomBytes(32).toString("base64url");
     // compute the hash of the plaintext
     const hash = createHash("sha256").update(plaintext).digest("hex");
     // compute the expiration time of the token
