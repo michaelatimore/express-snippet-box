@@ -1,11 +1,12 @@
 import { createHash, randomBytes } from "crypto";
 import type pg from "pg";
 import assert from "assert";
+import { db } from "../db/db.js";
 
 export class Tokens {
   pool: pg.Pool;
   constructor(pool: pg.Pool) {
-    //assert(pool, "pool is required");
+    assert(pool, "pool is required");
     this.pool = pool;
   }
   async generateAuthenticationToken(userId: string) {
@@ -23,5 +24,38 @@ export class Tokens {
     await this.pool.query(sql, params);
 
     return plaintext;
+  }
+
+  async getUserForToken(token: string) {
+    // Hash the given token using SHA-256
+    const hash = createHash("sha256").update(token).digest("hex");
+
+    // Use the hash to lookup the token data in the database
+    const result = await this.pool.query(
+      "SELECT * FROM tokens WHERE hash = $1",
+      [hash]
+    );
+
+    // Check that the data was found
+    if (result.rows.length === 0) {
+      return null;
+    }
+
+    // Get the user's ID and the expiry from the token data
+    const userId = result.rows[0].user_id;
+    const expiry = result.rows[0].expiry;
+
+    // Check that the expiry is in the future
+    if (expiry < Date.now() / 1000) {
+      return null;
+    }
+
+    // Fetch the user's data from the Users model using the userId
+    try {
+      const user = await db.Models.Users.getUserById(userId);
+      return user;
+    } catch (err) {
+      return null;
+    }
   }
 }

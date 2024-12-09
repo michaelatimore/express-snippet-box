@@ -19,11 +19,12 @@ export function validatePassword(password: string) {
   }
 }
 
-export function validateId(id: string) {
+export function validateId(id: number) {
   if (!id) {
     throw new Error("ID is missing");
   }
-  if (typeof id !== "string" || id.length === 0) {
+  console.log(typeof id);
+  if (typeof id !== "number" || id < 1) {
     throw new Error("Invalid ID format");
   }
   // Additional validation logic can be added here if necessary

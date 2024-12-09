@@ -1,17 +1,19 @@
 import { Router } from "express";
 import type { Request, Response } from "express";
 import { db } from "../db/db.js";
-import { ensureAuthenticated } from "./auth.js";
-import {validateSnippetId, validateSnippetFields,
+import { authenticate } from "../middleware/auth.js";
+import {
+  validateSnippetId,
+  validateSnippetFields,
 } from "../models/validator.js";
 
 const snippetRouter = Router();
 
-snippetRouter.post("/", ensureAuthenticated, createSnippet);
-snippetRouter.get("/all/:userId", ensureAuthenticated, getAllSnippetsByUserId);
-snippetRouter.get("/:snippetId", ensureAuthenticated, getSnippetById);
-snippetRouter.put("/:snippetId", ensureAuthenticated, updateSnippet);
-snippetRouter.delete("/:snippetId", ensureAuthenticated, deleteSnippet);
+snippetRouter.post("/", authenticate, createSnippet);
+snippetRouter.get("/all/:userId", authenticate, getAllSnippetsByUserId);
+snippetRouter.get("/:snippetId", authenticate, getSnippetById);
+snippetRouter.put("/:snippetId", authenticate, updateSnippet);
+snippetRouter.delete("/:snippetId", authenticate, deleteSnippet);
 
 async function createSnippet(req: Request, res: Response) {
   const { title, content, expirationDate, userId } = req.body;
@@ -35,9 +37,11 @@ async function createSnippet(req: Request, res: Response) {
 
 async function getAllSnippetsByUserId(req: Request, res: Response) {
   const { userId } = req.params;
-  
+
   try {
-    const snippets = await db.Models.Snippet.getAllSnippetsByUserId(parseInt(userId ?? ""));
+    const snippets = await db.Models.Snippet.getAllSnippetsByUserId(
+      parseInt(userId ?? "")
+    );
     res.json(snippets);
   } catch (err) {
     console.error("Failed to retrieve snippets: ", err);
@@ -45,7 +49,7 @@ async function getAllSnippetsByUserId(req: Request, res: Response) {
       res.status(404).json({ message: err.message });
     } else {
       res.status(500).json({ message: "Failed to retrieve snippets" });
-    };
+    }
   }
 }
 
@@ -90,7 +94,7 @@ async function updateSnippet(req: Request, res: Response) {
 
 async function deleteSnippet(req: Request, res: Response) {
   const { snippetId } = req.params;
- 
+
   try {
     const result = await db.Models.Snippet.deleteSnippet(snippetId!);
     res.json(result);

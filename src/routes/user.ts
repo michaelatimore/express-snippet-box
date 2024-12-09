@@ -1,19 +1,16 @@
 import { Router } from "express";
 import type { Request, Response } from "express";
-import bcrypt from "bcrypt";
 import { db } from "../db/db.js";
-import { User } from "../models/userModel.js";
-import { validateEmail, validatePassword } from "../models/validator.js";
+import { ensureAuthenticated } from "../middleware/auth.js";
 
 const userRouter = Router();
 
 userRouter.post("/", createUser);
 userRouter.post("/login", userLogin);
-/*
-userRouter.get("/:userId", getUserById);
-userRouter.put("/:userId", updateUser);
-userRouter.delete("/:userId", deleteUser);
-*/
+
+userRouter.get("/", ensureAuthenticated, getUserById);
+userRouter.put("/", ensureAuthenticated, updateUser);
+userRouter.delete("/", ensureAuthenticated, deleteUser);
 
 async function createUser(req: Request, res: Response) {
   const { email, firstName, lastName, password } = req.body;
@@ -37,6 +34,7 @@ async function createUser(req: Request, res: Response) {
 
 async function userLogin(req: Request, res: Response) {
   const { email, password } = req.body;
+  console.log(req.body);
 
   try {
     const user = await db.Models.Users.userLogin(email, password);
@@ -54,13 +52,13 @@ async function userLogin(req: Request, res: Response) {
 }
 
 async function getUserById(req: Request, res: Response) {
-  const { userId } = req.params;
+  const userId = req.user!.id;
   try {
     if (!req.params.userId) {
       res.status(400).json({ message: "User ID is required" });
       return;
     }
-    const user = await db.Models.Users.getUserById(req.params.userId);
+    const user = await db.Models.Users.getUserById(userId);
     res.status(200).json(user);
   } catch (err) {
     if (err instanceof Error) {
@@ -70,14 +68,16 @@ async function getUserById(req: Request, res: Response) {
     }
   }
 }
-
+type updateUserParams = {
+  email: string;
+  firstName: string;
+  lastName: string;
+  password: string;
+};
 async function updateUser(req: Request, res: Response) {
-  const { userId } = req.params;
-  if (!userId) {
-    res.status(400).json({ message: "User ID is required" });
-    return;
-  }
-  const { email, firstName, lastName, password } = req.body;
+  const userId = req.user!.id;
+
+  const { email, firstName, lastName, password } = req.body as updateUserParams;
   try {
     const updatedUser = db.Models.Users.updateUser(
       userId,
@@ -97,11 +97,8 @@ async function updateUser(req: Request, res: Response) {
 }
 
 async function deleteUser(req: Request, res: Response) {
-  const { userId } = req.params;
-  // if (!userId) {
-  //   res.status(400).json({ message: 'User ID is required' });
-  //   return;
-  // }
+  const userId = req.user!.id;
+
   try {
     const deletedUserId = db.Models.Users.deleteUser(userId);
     res.status(200).json(deletedUserId);

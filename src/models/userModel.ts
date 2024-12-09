@@ -81,10 +81,10 @@ export class User {
         throw new Error("Credentials invalid");
       }
 
-      // Check if the user's email is verified (commented out for now)
-      if (!user.email_verified) {
-        throw new Error("Email not verified");
-      }
+      // // Check if the user's email is verified (commented out for now)
+      // if (!user.email_verified) {
+      //   throw new Error("Email not verified");
+      // }
 
       // Generate authentication token
       const authToken = await db.Models.Tokens.generateAuthenticationToken(
@@ -105,7 +105,7 @@ export class User {
     }
   }
 
-  async getUserById(id: string) {
+  async getUserById(id: number) {
     try {
       validateId(id);
       const result = await this.pool.query(
@@ -128,7 +128,7 @@ export class User {
   }
 
   async updateUser(
-    id: string,
+    id: number,
     email?: string,
     firstName?: string,
     lastName?: string,
@@ -202,7 +202,7 @@ export class User {
     }
   }
 
-  async deleteUser(id: string | undefined) {
+  async deleteUser(id: number | undefined) {
     if (!id) {
       throw new Error("User ID is required");
     }
