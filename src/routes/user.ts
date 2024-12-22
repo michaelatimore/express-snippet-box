@@ -1,7 +1,7 @@
 import { Router } from "express";
 import type { Request, Response } from "express";
 import { db } from "../db/db.js";
-import { authenticate } from "../middleware/auth.js";//checks if a user is authenticated before allowing them to access a protected route.
+import { authenticate } from "../middleware/auth.js"; //checks if a user is authenticated before allowing them to access a protected route.
 import { validateEmail, validateId } from "../models/validator.js";
 import { nodemailerUser } from "../constants.js";
 import { transporter } from "../mailer/mailer.js";
@@ -18,7 +18,7 @@ userRouter.delete("/", authenticate, deleteUser);
 //change the password: trigger for user to send email to an endpoint and receive a code. Both go back to the server with the new password
 userRouter.post("/reset", sendResetEmail);
 // make put request to verify code and update users password
-userRouter.put("/", resetPassword)
+userRouter.put("/", resetPassword);
 
 async function createUser(req: Request, res: Response) {
   const { email, firstName, lastName, password } = req.body;
@@ -136,7 +136,9 @@ async function sendResetEmail(req: Request, res: Response) {
   try {
     validateEmail(email);
     const user = await db.Models.Users.getUserByEmail(email);
-    const resetToken = await db.Models.Tokens.generatePasswordResetToken(user.id);
+    const resetToken = await db.Models.Tokens.generatePasswordResetToken(
+      user.id
+    );
     const emailTemplate = {
       from: `"Snippet Box - No Reply" <${nodemailerUser}>`, //sender address
       to: email, //recipient
@@ -145,9 +147,11 @@ async function sendResetEmail(req: Request, res: Response) {
     };
     const result = await transporter.sendMail(emailTemplate);
     if (!result) {
-      return res.status(500).json({ "Server failed to process request"})
+      return res
+        .status(500)
+        .json({ message: "Server failed to process request" });
     }
-    return res.status(202).json({ message: "Message sent successfully." })
+    return res.status(202).json({ message: "Message sent successfully." });
   } catch (err) {
     console.error(err); //fix the error handling. make sure the error messages are generic
     if (err instanceof Error) {
@@ -163,7 +167,11 @@ async function resetPassword(req: Request, res: Response) {
   const { password, resetToken, userId } = req.body;
 
   try {
-    const passwordReset = await db.Models.Users.resetPassword(password, resetToken, userId);
+    const passwordReset = await db.Models.Users.resetPassword(
+      password,
+      resetToken,
+      userId
+    );
     res.status(200).json({ message: "Password reset successful" });
   } catch (err) {
     console.error("Failed to reset password: ", err);
@@ -171,6 +179,4 @@ async function resetPassword(req: Request, res: Response) {
   }
 }
 
- 
-
- export { userRouter };
+export { userRouter };
