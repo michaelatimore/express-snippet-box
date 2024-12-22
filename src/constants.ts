@@ -1,13 +1,23 @@
-import "dotenv/config";
 import assert from "assert";
+import "dotenv/config";
 
 export const connectionString = process.env.DSN;
-
 assert(
   connectionString,
-  "Connection string is required. Set DSN environment variable."
+  "Connection string is required. Set DSN enviroment variable."
 );
 
+export const nodemailerUser = process.env.NODEMAILER_USER;
+assert(
+  nodemailerUser,
+  "nodemailer user is required. Set NODEMAILER_USER enviroment variable."
+);
+
+export const nodemailerPassword = process.env.NODEMAILER_PASSWORD;
+assert(
+  nodemailerPassword,
+  "nodemailer password is required. Set NODEMAILER_PASSWORD enviroment variable."
+);
 
 /*
 import "dotenv/config";:
@@ -26,4 +36,4 @@ The DSN typically contains information required to connect to a Postgres databas
 assert(connectionString, "Connection string is required. Set DSN environment variable.");:
 
 The assert function is used to check whether connectionString is defined. If it's undefined or null, the application will throw an error with the message "Connection string is required. Set DSN environment variable."
-This is a safeguard to ensure that the database connection string is always provided when the app starts. Without the DSN, the app would be unable to connect to the Postgres database.*/ 
+This is a safeguard to ensure that the database connection string is always provided when the app starts. Without the DSN, the app would be unable to connect to the Postgres database.*/

@@ -1,11 +1,13 @@
 import type { Request, Response, NextFunction } from "express";
 import { db } from "../db/db.js";
+import { scope } from "../models/tokenModel.js";
 
 export async function authenticate(
   req: Request,
   res: Response,
   next: NextFunction
 ) {
+  // verify the authenticity of incoming requests by checking for a valid authentication token in the Authorization header of the request.
   // Add a null user to the request
   req.user = null;
 
@@ -30,7 +32,10 @@ export async function authenticate(
   }
 
   try {
-    const result = await db.Models.Tokens.getUserForToken(token);
+    const result = await db.Models.Tokens.getUserForToken(
+      token
+      //scope.AUTHENTICATION
+    );
 
     if (!result) {
       return next();
@@ -47,7 +52,7 @@ export async function authenticate(
   }
 }
 export async function ensureAuthenticated(
-  req: Request,
+  req: Request, //checks if a user is authenticated before allowing them to access a protected route.
   res: Response,
   next: NextFunction
 ) {

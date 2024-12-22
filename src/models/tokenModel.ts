@@ -3,6 +3,11 @@ import type pg from "pg";
 import assert from "assert";
 import { db } from "../db/db.js";
 
+export enum scope {
+  AUTHENTICATION = "authentication",
+  PASSWORD_RESET = "password",
+}
+
 export class Tokens {
   pool: pg.Pool;
   constructor(pool: pg.Pool) {
@@ -10,17 +15,40 @@ export class Tokens {
     this.pool = pool;
   }
   async generateAuthenticationToken(userId: string) {
+    //token can only be used for authentication
     // generate a random token plaintext
     const plaintext = randomBytes(32).toString("base64url");
+
     // compute the hash of the plaintext
     const hash = createHash("sha256").update(plaintext).digest("hex");
+
     // compute the expiration time of the token
     const expiry = Math.trunc(Date.now() / 1000) + 60 * 60 * 24 * 30;
 
     // insert the token into the database
     const sql =
-      "insert into tokens (hash, expiry, user_id) values ($1, $2, $3)"; //prepared statement
-    const params = [hash, expiry, userId];
+      "insert into tokens (hash, expiry, user_id, scope) values ($1, $2, $3, $4)"; //prepared statement
+    const params = [hash, expiry, userId, scope.AUTHENTICATION];
+    await this.pool.query(sql, params);
+
+    return plaintext;
+  }
+
+  async generatePasswordResetToken(userId: string) {
+    //token can only be used for password reset
+    // generate a random token plaintext
+    const plaintext = randomBytes(32).toString("base64url");
+
+    // compute the hash of the plaintext
+    const hash = createHash("sha256").update(plaintext).digest("hex");
+
+    // compute the expiration time of the token
+    const expiry = Math.trunc(Date.now() / 1000) + 60 * 60;
+
+    // insert the token into the database
+    const sql =
+      "insert into tokens (hash, expiry, user_id, scope) values ($1, $2, $3, $4)"; //prepared statement
+    const params = [hash, expiry, userId, scope.PASSWORD_RESET];
     await this.pool.query(sql, params);
 
     return plaintext;
@@ -55,6 +83,7 @@ export class Tokens {
       const user = await db.Models.Users.getUserById(userId);
       return user;
     } catch (err) {
+      console.error(err);
       return null;
     }
   }

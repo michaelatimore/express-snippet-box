@@ -6,8 +6,12 @@ import {
   validatePassword,
   validateFields,
   validateId,
+  validatePasswordAgainstHash,
 } from "./validator.js";
 import { db } from "../db/db.js";
+import type { Token } from "nodemailer/lib/xoauth2/index.js";
+import { scope } from "./tokenModel.js";
+import { error } from "console";
 
 type UserModel = {
   email: string;
@@ -32,6 +36,7 @@ export class User {
   ) {
     try {
       validateFields(email, firstName, lastName, password);
+      //trigger for user to send email to an endpoint and recieve a code. Both go back to the server with the new password
 
       const passwordHash = await bcrypt.hash(password, 10);
 
@@ -42,24 +47,17 @@ export class User {
       return { id: newUser.rows[0].id, email, firstName, lastName };
     } catch (err) {
       console.error("Failed to create user: ", err);
+      throw err; //throw the error so I can access it in user.ts
     }
   }
 
   async userLogin(email: string, password: string) {
-    // Validate email and password
-    if (!email) {
-      throw new Error("Email is missing");
-    }
     const emailRx =
-      /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$/;
-    if (!email.match(emailRx)) {
-      throw new Error("Invalid email format");
-    }
-    if (!password) {
-      throw new Error("Password is missing");
-    }
-    if (password.length < 8) {
-      throw new Error("Minimum password length is 8 characters");
+      "^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$";
+    // Validate email and password
+    validateEmail(email);
+    if (password) {
+      if (password) validatePassword(password);
     }
 
     try {
@@ -76,12 +74,8 @@ export class User {
       const user = result.rows[0];
 
       // Verify the password
-      const isPasswordValid = await bcrypt.compare(password, user.password);
-      if (!isPasswordValid) {
-        throw new Error("Credentials invalid");
-      }
+      validatePasswordAgainstHash(password, user.password);
 
-      // // Check if the user's email is verified (commented out for now)
       // if (!user.email_verified) {
       //   throw new Error("Email not verified");
       // }
@@ -128,11 +122,11 @@ export class User {
   }
 
   async updateUser(
+    // ? =  Optional parameters
     id: number,
     email?: string,
     firstName?: string,
-    lastName?: string,
-    password?: string
+    lastName?: string
   ) {
     try {
       // Validate the provided user ID
@@ -140,15 +134,9 @@ export class User {
 
       // Validate optional fields if provided
       if (email) validateEmail(email);
-      if (password) validatePassword(password);
-
-      // Validate fields if firstName or lastName is provided
-      if (firstName || lastName) {
-        validateFields(email!, firstName!, lastName!, password!);
-      }
 
       // Initialize the SQL update query and parameters array
-      let updateUserQuery = "UPDATE users SET ";
+      let updateUserQuery = "UPDATE users SET "; //updating the users table and setting new values for certain columns.
       const params: any[] = [id];
 
       // Append email to the query if provided
@@ -165,12 +153,6 @@ export class User {
       if (lastName) {
         updateUserQuery += "last_name = $4, ";
         params.push(lastName);
-      }
-      // Hash the password and append to the query if provided
-      if (password) {
-        const passwordHash = await bcrypt.hash(password, 10);
-        updateUserQuery += "password = $5, ";
-        params.push(passwordHash);
       }
 
       // Remove the trailing comma and space from the query
@@ -202,10 +184,7 @@ export class User {
     }
   }
 
-  async deleteUser(id: number | undefined) {
-    if (!id) {
-      throw new Error("User ID is required");
-    }
+  async deleteUser(id: number) {
     try {
       validateId(id);
       const result = await this.pool.query(
@@ -223,20 +202,54 @@ export class User {
   }
 
   async getUserByEmail(email: string) {
-    const result = await this.pool.query(
-      "SELECT * FROM users WHERE email = $1",
-      [email]
-    );
+    try {
+      validateEmail(email);
+      const result = await this.pool.query(
+        "SELECT * FROM users WHERE email = $1",
+        [email]
+      );
 
-    if (result.rows.length === 0) {
-      throw new Error("User not found");
+      if (result.rows.length === 0) {
+        throw new Error("User not found");
+      }
+      return {
+        id: result.rows[0].id,
+        email: result.rows[0].email,
+        firstName: result.rows[0].first_name,
+        lastName: result.rows[0].last_name,
+        passwordHash: result.rows[0].password,
+      };
+    } catch (err) {
+      console.error("Failed to get user by email: ", err);
+      throw err;
     }
-    return {
-      id: result.rows[0].id,
-      email: result.rows[0].email,
-      firstName: result.rows[0].first_name,
-      lastName: result.rows[0].last_name,
-      passwordHash: result.rows[0].password,
-    };
+  }
+
+  async resetPassword(password: string, resetToken: string, userId: number) {
+    try {
+      //check if the required fields are present
+      if (!password || !resetToken || !userId) {
+        throw new Error("Missing required fields");
+      }
+      const user = await db.Models.Tokens.getUserForToken(resetToken);
+
+      //getUserForToken will call getUserById. Use this to compare the user id from the token to the user id from the request. Verifies the validity of the token.
+      if (!user || user.id !== userId) {
+        console.error("Invalid request ", error);
+        throw error;
+      }
+      //hash the new password
+      const passwordHash = await bcrypt.hash(password, 10);
+
+      //upsate the user's password in the database
+      const newPassword = await this.pool.query(
+        "UPDATE users SET password = $1 WHERE id = $2 RETURNING id",
+        [passwordHash, userId]
+      );
+      return { id: newPassword.rows[0].id }; //just return the id of the user
+    } catch (err) {
+      console.error("Failed to change password: ", err);
+      throw err;
+    }
   }
 }

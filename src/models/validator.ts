@@ -1,3 +1,18 @@
+import bcrypt from "bcrypt";
+
+export async function validatePasswordAgainstHash(
+  password: string,
+  hashedPassword: string
+) {
+  try {
+    const isValid = await bcrypt.compare(password, hashedPassword);
+    return isValid;
+  } catch (err) {
+    console.error("Error validating password: ", err);
+    throw err;
+  }
+}
+
 const emailRx =
   "^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$";
 
@@ -23,11 +38,9 @@ export function validateId(id: number) {
   if (!id) {
     throw new Error("ID is missing");
   }
-  console.log(typeof id);
   if (typeof id !== "number" || id < 1) {
     throw new Error("Invalid ID format");
   }
-  // Additional validation logic can be added here if necessary
 }
 
 export function validateFields(
